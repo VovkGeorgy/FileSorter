@@ -5,8 +5,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Main {
     /**
-     * Main class BITCH!
-     * @param args -
+     * Main class
+     *
+     * @param args - arguments which send by commend line at startup
      */
     public static void main(String[] args) {
         System.out.println("WORK!");

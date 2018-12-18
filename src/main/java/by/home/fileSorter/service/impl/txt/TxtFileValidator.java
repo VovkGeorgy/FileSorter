@@ -1,63 +1,64 @@
 package by.home.fileSorter.service.impl.txt;
 
+import by.home.fileSorter.entity.ExceptionMessage;
 import by.home.fileSorter.service.IFIleValidator;
+import by.home.fileSorter.service.impl.ExceptionMessageBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * TXT file validator class
  */
+@Service
 public class TxtFileValidator implements IFIleValidator {
 
-    private ArrayList<String[]> validMessages = new ArrayList<>();
-    private ArrayList<String[]> notValidMessages = new ArrayList<>();
-    private ArrayList<File> validMessageFileList = new ArrayList<>();
+    @Value("${txt.fields.splitter}")
+    private String txtFieldsSplitter;
+
     private ArrayList<File> notValidMessageFileList = new ArrayList<>();
+    private ArrayList<ExceptionMessage> validMessageList = new ArrayList<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(TxtFileValidator.class);
 
+    @Autowired
+    private ExceptionMessageBuilder exceptionMessageBuilder;
 
     @Override
-    public void valid(ArrayList<String[]> listOfMessages, File messageFile) {
+    public void valid(String message, File messageFile) {
         LOGGER.info("Check txt file validity");
-        listOfMessages.forEach(fieldArray -> {
-            if (isIdNotNull(fieldArray) && isAllFieldsExist(fieldArray)) {
-                validMessages.add(fieldArray);
-                validMessageFileList.add(messageFile);
-                LOGGER.debug("File {} is valid", messageFile.getName());
-            } else {
-                notValidMessages.add(fieldArray);
-                notValidMessageFileList.add(messageFile);
-                LOGGER.debug("File {} is NOT valid", messageFile.getName());
-            }
-        });
+        List<String> fieldList = Arrays.asList(message.split(txtFieldsSplitter));
+        if (validateFile(fieldList)) {
+            ExceptionMessage exceptionMessage = exceptionMessageBuilder.build(message);
+            LOGGER.debug("File {} is valid", messageFile.getName());
+            if (validateObject(exceptionMessage)) {
+                exceptionMessage.setFileName(messageFile.getName());
+                validMessageList.add(exceptionMessage);
+            } else notValidMessageFileList.add(messageFile);
+        } else notValidMessageFileList.add(messageFile);
     }
 
-    private boolean isIdNotNull(String[] fieldArray) {
-        LOGGER.info("Check that is field ID in message is not NULL");
-        return fieldArray[0] != null && !Objects.equals(fieldArray[0], "");
+    private boolean validateObject(ExceptionMessage exceptionMessage) {
+        if(exceptionMessage == null || exceptionMessage.getMessageType().isEmpty() || exceptionMessage.getId() == 0) return false;
+        else return true;
     }
 
-    private boolean isAllFieldsExist(String[] fieldArray) {
-        LOGGER.info("Check that is all field in file exist");
-        return fieldArray.length == 6;
+    private boolean validateFile(List<String> fieldList) {
+        return fieldList.size() == 5;
     }
 
-    public ArrayList<String[]> getValidMessages() {
-        return validMessages;
+    @Override
+    public ArrayList getValidMessageList() {
+        return validMessageList;
     }
 
-    public ArrayList<String[]> getNotValidMessages() {
-        return notValidMessages;
-    }
-
-    public ArrayList<File> getValidMessageFileList() {
-        return validMessageFileList;
-    }
-
+    @Override
     public ArrayList<File> getNotValidMessageFileList() {
         return notValidMessageFileList;
     }

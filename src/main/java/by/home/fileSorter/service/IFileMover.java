@@ -6,13 +6,13 @@ import java.util.List;
 /**
  * Interface declare methods to moving some files
  */
-public interface IFileMover {
+public interface IFileMover<T> {
 
     /**
      * Method move sorted files in local or remote storage
      *
-     * @param validFileList    list of valid files
+     * @param validObjectsList list of valid objects
      * @param notValidFileList list of not valid files
      */
-    void moveFiles(List<File> validFileList, List<File> notValidFileList);
+    void moveFiles(T validObjectsList, List<File> notValidFileList);
 }

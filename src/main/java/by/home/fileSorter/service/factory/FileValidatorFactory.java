@@ -10,10 +10,12 @@ import by.home.fileSorter.service.impl.txt.TxtFileValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Class returns an object depending on the input parameter
  */
+@Service
 public class FileValidatorFactory {
 
     @Autowired

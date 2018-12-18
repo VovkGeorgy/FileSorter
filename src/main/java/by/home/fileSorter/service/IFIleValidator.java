@@ -6,17 +6,17 @@ import java.util.ArrayList;
 /**
  * Interface declare methods for file validators
  */
-public interface IFIleValidator {
+public interface IFIleValidator<T> {
 
     /**
      * Method get parsed list of messages, and file for it validation and save
      *
-     * @param listOfMessages list of parsed messages
-     * @param messageFile    file of messages
+     * @param message     list of parsed messages
+     * @param messageFile file of messages
      */
-    void valid(ArrayList<String[]> listOfMessages, File messageFile);
+    void valid(String message, File messageFile);
 
-    ArrayList<File> getValidMessageFileList();
+    ArrayList<T> getValidMessageList();
 
     ArrayList<File> getNotValidMessageFileList();
 }

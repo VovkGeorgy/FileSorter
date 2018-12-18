@@ -3,81 +3,87 @@ package by.home.fileSorter;
 import by.home.fileSorter.service.IFIleValidator;
 import by.home.fileSorter.service.IFileMover;
 import by.home.fileSorter.service.IFileParser;
-import by.home.fileSorter.service.IMessageBuilder;
 import by.home.fileSorter.service.factory.FileMoverFactory;
 import by.home.fileSorter.service.factory.FileParserFactory;
 import by.home.fileSorter.service.factory.FileValidatorFactory;
-import by.home.fileSorter.service.factory.MessageBuilderFactory;
 import by.home.fileSorter.service.file.FileReader;
 import by.home.fileSorter.service.file.FileSeparator;
-import by.home.fileSorter.service.file.FilesFolderScanner;
-import by.home.fileSorter.service.impl.txt.TxtFileParser;
-import by.home.fileSorter.utils.PropertiesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class control program running
  */
+@Component
+@EnableScheduling
 public class SorterRunner {
 
-    @Autowired
-    private FilesFolderScanner filesFolderScanner;
-    @Autowired
-    private PropertiesUtils propertiesUtils;
-    @Autowired
+    @Value("${scan.delay}")
+    private int scanDelay;
+
+    @Value("${json.file.extension}")
+    private String jsonFileExtension;
+
+    @Value("${txt.file.extension}")
+    private String txtFileExtension;
+
+    @PostConstruct
+    void postConstruct() {
+        filesExtensions.add(txtFileExtension);
+        filesExtensions.add(jsonFileExtension);
+    }
+
     private FileSeparator fileSeparator;
-    @Autowired
     private FileMoverFactory fileMoverFactory;
-    @Autowired
     private FileParserFactory fileParserFactory;
-    @Autowired
     private FileReader fileReader;
-    @Autowired
     private FileValidatorFactory fileValidatorFactory;
+    private List<String> filesExtensions = new ArrayList<>();
+
     @Autowired
-    private MessageBuilderFactory messageBuilderFactory;
+    public SorterRunner(FileSeparator fileSeparator,
+                        FileMoverFactory fileMoverFactory, FileParserFactory fileParserFactory, FileReader fileReader,
+                        FileValidatorFactory fileValidatorFactory) {
+        this.fileSeparator = fileSeparator;
+        this.fileMoverFactory = fileMoverFactory;
+        this.fileParserFactory = fileParserFactory;
+        this.fileReader = fileReader;
+        this.fileValidatorFactory = fileValidatorFactory;
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SorterRunner.class);
 
     /**
-     * Method exist all program functions, to step by step working
+     * Method exist all program functions, to step by step working, and repeat evey 5 sec
      */
+    @Scheduled(fixedDelay = 5000)
     void runSorter() {
         LOGGER.info("Program started");
-        List<String> fileTemplates = propertiesUtils.getTemplates();
-        for (String template : fileTemplates) {
-            List<File> notSortedFiles = filesFolderScanner.scan();
-            LOGGER.debug("Get not sorted {} files {}", template, notSortedFiles);
-            if (notSortedFiles == null) continue;
-            List<File> sortedFiles = fileSeparator.separate(notSortedFiles, template);
-            LOGGER.debug("Get sorted {} files {}", template, sortedFiles);
-            if (sortedFiles == null) continue;
-            IFileParser fileParser = fileParserFactory.getFileParser(sortedFiles);
+        for (String extension : filesExtensions) {
+            List<File> files = fileSeparator.getFilesByExtension(extension);
+            LOGGER.debug("Get sorted {} files {}", extension, files);
+            if (files.isEmpty()) continue;
+            IFileParser fileParser = fileParserFactory.getFileParser(files);
             LOGGER.debug("Get file parser {}", fileParser);
             IFIleValidator fileValidator = fileValidatorFactory.getFileValidator(fileParser);
             LOGGER.debug("Get file validator {}", fileValidator);
-            sortedFiles.forEach(file -> fileValidator.valid(fileParser.getMessages(fileReader.readFile(file.getPath())), file));
-            IMessageBuilder messageBuilder = messageBuilderFactory.getFileBuilder(fileParser);
-            LOGGER.debug("Get message builder {}", messageBuilder);
-            messageBuilder.build();
-            IFileMover fileMover = fileMoverFactory.getFileMover(fileParser);
+            files.forEach(file -> fileValidator.valid(fileParser.getMessage(fileReader.readFile(file.getPath())), file));
+            IFileMover fileMover = fileMoverFactory.getFileMover(fileValidator.getValidMessageList(), fileValidator.getNotValidMessageFileList());
             LOGGER.debug("Get file mover {}", fileMover);
-            List<File> validFileList = fileValidator.getValidMessageFileList();
-            List<File> notValidFileList = fileValidator.getNotValidMessageFileList();
-            fileMover.moveFiles(validFileList, notValidFileList);
+            ArrayList validMessageList = fileValidator.getValidMessageList();
+            ArrayList notValidFileList = fileValidator.getNotValidMessageFileList();
+            fileMover.moveFiles(validMessageList, notValidFileList);
             LOGGER.info("End cycle of program");
-        }
-        try {
-            LOGGER.debug("Wait {} mseconds", propertiesUtils.getScanDelay());
-            Thread.sleep(propertiesUtils.getScanDelay());
-            runSorter();
-        } catch (Exception ex) {
-            LOGGER.error("Program get exception on sleep {}", ex.getMessage());
         }
     }
 }

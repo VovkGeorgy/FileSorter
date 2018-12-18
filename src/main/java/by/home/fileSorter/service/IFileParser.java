@@ -1,6 +1,5 @@
 package by.home.fileSorter.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,5 +13,5 @@ public interface IFileParser {
      * @param linesList list of file lines
      * @return list of parsed lines
      */
-    ArrayList<String[]> getMessages(List<String> linesList);
+    String getMessage(List<String> linesList);
 }

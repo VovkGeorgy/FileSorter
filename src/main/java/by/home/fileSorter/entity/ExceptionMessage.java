@@ -1,26 +1,47 @@
 package by.home.fileSorter.entity;
 
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+
 /**
  * Entity of Error message, in whom we parse TXT files
  */
+@Component
 public class ExceptionMessage {
 
+    private String messageType;
     private Long id;
     private String message;
     private String typeOfException;
-    private String thrownClass;
-    private String thrownMethod;
-    private Integer thrownLine;
+    private LocalDate throwingTime;
+    private String fileName;
 
     public ExceptionMessage() {
     }
 
-    public ExceptionMessage(String message, String typeOfException, String thrownClass, String thrownMethod, Integer thrownLine, Long id) {
+    public ExceptionMessage(String messageType, Long id, String message, String typeOfException, LocalDate throwingTime, String fileName) {
+        this.messageType = messageType;
+        this.id = id;
         this.message = message;
         this.typeOfException = typeOfException;
-        this.thrownClass = thrownClass;
-        this.thrownMethod = thrownMethod;
-        this.thrownLine = thrownLine;
+        this.throwingTime = throwingTime;
+        this.fileName = fileName;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -40,35 +61,19 @@ public class ExceptionMessage {
         this.typeOfException = typeOfException;
     }
 
-    public String getThrownClass() {
-        return thrownClass;
+    public LocalDate getThrowingTime() {
+        return throwingTime;
     }
 
-    public void setThrownClass(String thrownClass) {
-        this.thrownClass = thrownClass;
+    public void setThrowingTime(LocalDate throwingTime) {
+        this.throwingTime = throwingTime;
     }
 
-    public String getThrownMethod() {
-        return thrownMethod;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setThrownMethod(String thrownMethod) {
-        this.thrownMethod = thrownMethod;
-    }
-
-    public Integer getThrownLine() {
-        return thrownLine;
-    }
-
-    public void setThrownLine(Integer thrownLine) {
-        this.thrownLine = thrownLine;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

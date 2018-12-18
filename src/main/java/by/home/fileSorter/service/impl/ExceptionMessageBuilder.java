@@ -1,48 +1,41 @@
 package by.home.fileSorter.service.impl;
 
-import by.home.fileSorter.service.ApplicationContextProvider;
 import by.home.fileSorter.entity.ExceptionMessage;
 import by.home.fileSorter.service.IMessageBuilder;
-import by.home.fileSorter.service.impl.txt.TxtFileValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Class for Exception Message instance building
  */
-public class ExceptionMessageBuilder implements IMessageBuilder<List<ExceptionMessage>> {
+@Service
+public class ExceptionMessageBuilder implements IMessageBuilder<ExceptionMessage> {
 
-    @Autowired
-    private ApplicationContextProvider applicationContextProvider;
+    @Value("${txt.fields.splitter}")
+    private String txtFieldsSplitter;
 
-    @Autowired
-    private TxtFileValidator txtFileValidator;
-
-    private List<ExceptionMessage> exceptionMessagesList = new ArrayList<>();
-    private List<List<ExceptionMessage>> exceptionMessagesFullList = new ArrayList<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionMessageBuilder.class);
 
     @Override
-    public List<List<ExceptionMessage>> build() {
+    public ExceptionMessage build(String message) {
         LOGGER.info("Try to build a Error Message entity, from TXT file");
-        ArrayList<String[]> listOfMessages = txtFileValidator.getValidMessages();
-        listOfMessages.forEach(line -> {
-                    ExceptionMessage exceptionMessage = applicationContextProvider.getApplicationContext().getBean(ExceptionMessage.class);
-                    exceptionMessage.setId(Long.parseLong(line[0]));
-                    exceptionMessage.setMessage(line[1]);
-                    exceptionMessage.setTypeOfException(line[2]);
-                    exceptionMessage.setThrownClass(line[3]);
-                    exceptionMessage.setThrownMethod(line[4]);
-                    exceptionMessage.setThrownLine(Integer.parseInt(line[5]));
-                    exceptionMessagesList.add(exceptionMessage);
-                    LOGGER.debug("Build exception message entity {}", exceptionMessage);
-                }
-        );
-        exceptionMessagesFullList.add(exceptionMessagesList);
-        return exceptionMessagesFullList;
+        List<String> fieldList = Arrays.asList(message.split(txtFieldsSplitter));
+        ExceptionMessage exceptionMessage = new ExceptionMessage();
+        exceptionMessage.setMessageType(fieldList.get(0));
+        exceptionMessage.setId(Long.parseLong(fieldList.get(1)));
+        exceptionMessage.setMessage(fieldList.get(2));
+        exceptionMessage.setTypeOfException(fieldList.get(3));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        exceptionMessage.setThrowingTime(LocalDate.parse(fieldList.get(4), formatter));
+        LOGGER.debug("Build exception message entity {}", exceptionMessage);
+        return exceptionMessage;
     }
 }

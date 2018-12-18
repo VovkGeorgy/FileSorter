@@ -3,10 +3,12 @@ package by.home.fileSorter.service.factory;
 import by.home.fileSorter.service.IFileParser;
 import by.home.fileSorter.service.impl.json.JsonFileParser;
 import by.home.fileSorter.service.impl.txt.TxtFileParser;
-import by.home.fileSorter.utils.PropertiesUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.List;
@@ -14,14 +16,20 @@ import java.util.List;
 /**
  * Class returns an object depending on the input parameter
  */
+@Service
 public class FileParserFactory {
 
     @Autowired
-    private PropertiesUtils propertiesUtils;
-    @Autowired
     private TxtFileParser txtFileParser;
+
     @Autowired
     private JsonFileParser jsonFileParser;
+
+    @Value("${json.file.extension}")
+    private String jsonFileExtension;
+
+    @Value("${txt.file.extension}")
+    private String txtFileExtension;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileParserFactory.class);
 
@@ -33,13 +41,11 @@ public class FileParserFactory {
      */
     public IFileParser getFileParser(List<File> fileList) {
         LOGGER.info("Getting file parser, depending of file in fileList ending");
-        String txtFileTemplate = propertiesUtils.getTxtFileTemplate();
-        String jsonFileTemplate = propertiesUtils.getJsonFileTemplate();
         IFileParser fileParser = null;
-        if (fileList.get(0).getName().endsWith(txtFileTemplate)) {
+        if (FilenameUtils.getExtension(fileList.get(0).getName()).equals(txtFileExtension)) {
             fileParser = txtFileParser;
             LOGGER.debug("Getting file parser {} depending of file in list ending {}", txtFileParser, fileList);
-        } else if (fileList.get(0).getName().endsWith(jsonFileTemplate)) {
+        } else if (FilenameUtils.getExtension(fileList.get(0).getName()).equals(jsonFileExtension)) {
             fileParser = jsonFileParser;
             LOGGER.debug("Getting file parser {} depending of file in list ending {}", jsonFileParser, fileList);
         }

@@ -2,16 +2,19 @@ package by.home.fileSorter.service.file;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class realise method whom read file by input path
  */
+@Service
 public class FileReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileReader.class);
@@ -29,8 +32,7 @@ public class FileReader {
             return Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOGGER.error("Cant read file from path {}, get exception []", filePath, e.getMessage());
-            System.out.println("Ops" + e.getMessage());
         }
-        return null;
+        return new ArrayList<>();
     }
 }
