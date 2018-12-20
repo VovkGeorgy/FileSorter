@@ -1,30 +1,25 @@
 package by.home.fileSorter.service.impl.json;
 
-import by.home.fileSorter.entity.ErrorMessage;
 import by.home.fileSorter.service.IFileMover;
 import com.jcraft.jsch.*;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Class realise method which move JSON file from local folder to sftp server
+ * Class realise method which move JSON files
  */
 @Service
-public class JsonFileMover implements IFileMover<List<ErrorMessage>> {
-
+@Slf4j
+public class JsonFileMover implements IFileMover {
 
     @Value("${json.sftp.valid.folder.path}")
-    private String jsonRemoveValidFolderPath;
+    private String validToFolder;
 
     @Value("${json.sftp.not.valid.folder.path}")
-    private String jsonNotValidFolderPath;
+    private String notValidToFolder;
 
     @Value("${ftp.username}")
     private String ftpUsername;
@@ -48,62 +43,53 @@ public class JsonFileMover implements IFileMover<List<ErrorMessage>> {
     private String ftpChanelType;
 
     @Value("${not.sorted.folder.path}")
-    private String notSortedFolderPath;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonFileMover.class);
+    private String fromFolder;
 
     @Override
-    public void moveFiles(List<ErrorMessage> validObjectsList, List<File> notValidFileList) {
-        LOGGER.info("Move files to path from property");
-        LOGGER.debug("Move files from {} valid to {}, not valid to {} path", notSortedFolderPath, jsonRemoveValidFolderPath,
-                jsonNotValidFolderPath);
-        move(getFilesByObject(validObjectsList), jsonRemoveValidFolderPath);
-        move(notValidFileList, jsonNotValidFolderPath);
+    public boolean moveFile(boolean isValid, File file) {
+        log.info("Move files to path from property");
+        log.debug("Move files from {} isValid to {}, not valid to {} path", fromFolder, validToFolder,
+                notValidToFolder);
+        return isValid ? move(file, validToFolder) : move(file, notValidToFolder);
     }
 
-    private void move(List<File> fileList, String jsonRemoteFolderPath) {
+    private boolean move(File file, String jsonRemoteFolderPath) {
         JSch jsch = new JSch();
         Session session = null;
         ChannelSftp sftpChannel = new ChannelSftp();
         try {
-            LOGGER.info("Try to connect to server");
+            log.info("Try to connect to server");
             session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
             session.setConfig(ftpConfigV1, ftpConfigV2);
             session.setPassword(ftpPassword);
-            LOGGER.debug("Try to connect to session {}", session);
+            log.debug("Try to connect to session {}", session);
             session.connect();
             Channel channel = session.openChannel(ftpChanelType);
-            LOGGER.debug("Try to connect to chanel {}", channel);
+            log.debug("Try to connect to chanel {}", channel);
             channel.connect();
             sftpChannel = (ChannelSftp) channel;
-            LOGGER.debug("Connecting to server is established");
-            LOGGER.info("Upload files to server");
-            for (File file : fileList) {
-                sftpChannel.put(notSortedFolderPath + file.getName(), jsonRemoteFolderPath + file.getName());
-            }
-            boolean resuldOfDeleting = deleteOldFiles(fileList);
-            LOGGER.debug("Old file are deleted - {}", resuldOfDeleting);
+            log.debug("Connecting to server is established");
+            log.info("Upload files to server");
+            sftpChannel.put(fromFolder + file.getName(), jsonRemoteFolderPath + file.getName());
+            boolean resultOfDeleting = deleteOldFiles(file);
+            log.debug("Old file are deleted - {}", resultOfDeleting);
+            return true;
         } catch (JSchException | SftpException e) {
-            LOGGER.error("SFTP Connection exception {}", e.getMessage());
+            log.error("SFTP Connection exception {}", e.getMessage());
+            return false;
         } catch (NullPointerException nul) {
-            LOGGER.debug("Connection session is NULL", nul.getMessage());
+            log.debug("Connection session is NULL", nul.getMessage());
+            return false;
         } finally {
-            LOGGER.info("Close server connection");
+            log.info("Close server connection");
             sftpChannel.exit();
             if (session != null) session.disconnect();
-            else LOGGER.debug("Connection session is NULL");
+            else log.debug("Connection session is NULL");
         }
     }
 
-    private List<File> getFilesByObject(List<ErrorMessage> validObjectsList) {
-        ArrayList<File> validFileList = new ArrayList<>();
-        validObjectsList.forEach(errorMessage -> validFileList.add(FileUtils.getFile(notSortedFolderPath, errorMessage.getFileName())));
-        return validFileList;
-    }
-
-    private boolean deleteOldFiles(List<File> fileList) {
-        LOGGER.info("Deleting old local files");
-        fileList.stream().filter(File::exists).forEach(File::delete);
-        return true;
+    private boolean deleteOldFiles(File file) {
+        log.info("Deleting old local files");
+        return file.exists() && file.delete();
     }
 }

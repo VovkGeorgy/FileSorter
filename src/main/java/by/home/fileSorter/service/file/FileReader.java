@@ -1,37 +1,35 @@
 package by.home.fileSorter.service.file;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class realise method whom read file by input path
+ * Class realise method whom read input file
  */
 @Service
+@Slf4j
 public class FileReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileReader.class);
-
     /**
-     * Method read file from input path
+     * Method read input file
      *
-     * @param filePath file input path
+     * @param file input file
      * @return all lines from file in List
      */
-    public List<String> readFile(String filePath) {
-        LOGGER.info("Try to read file");
+    public List<String> readFile(File file) {
+        log.info("Try to read file");
         try {
-            LOGGER.debug("Try to read file from path {}", filePath);
-            return Files.readAllLines(Paths.get(filePath), StandardCharsets.UTF_8);
+            log.debug("Try to read file from path {}", file.getPath());
+            return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            LOGGER.error("Cant read file from path {}, get exception []", filePath, e.getMessage());
+            log.error("Cant read file from path {}, get exception []", file.getPath(), e.getMessage());
         }
         return new ArrayList<>();
     }
