@@ -1,7 +1,7 @@
 package by.home.fileSorter;
 
 import by.home.fileSorter.service.FileServiceFactory;
-import by.home.fileSorter.service.file.FileGetter;
+import by.home.fileSorter.service.file.FileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,12 +19,12 @@ import java.util.List;
 @EnableScheduling
 public class SorterRunnerService {
 
-    private FileGetter fileGetter;
+    private FileManager fileManager;
     private FileServiceFactory fileServiceFactory;
 
     @Autowired
-    public SorterRunnerService(FileGetter fileGetter, FileServiceFactory fileServiceFactory) {
-        this.fileGetter = fileGetter;
+    public SorterRunnerService(FileManager fileManager, FileServiceFactory fileServiceFactory) {
+        this.fileManager = fileManager;
         this.fileServiceFactory = fileServiceFactory;
     }
 
@@ -33,9 +33,9 @@ public class SorterRunnerService {
      */
     @Scheduled(fixedDelayString = "${scan.delay}")
     void runSorter() {
-        log.info("Program started");
-        List<File> files = fileGetter.getFilesByExtension();
+        List<File> files = fileManager.getFilesByExtension();
         if (files.isEmpty()) return;
+        log.info("Get new files {}", files);
         files.forEach(file -> fileServiceFactory.getFileService(file).process(file));
     }
 }

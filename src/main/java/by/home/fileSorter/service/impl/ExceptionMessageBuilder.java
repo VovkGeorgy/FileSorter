@@ -28,7 +28,8 @@ public class ExceptionMessageBuilder implements IBuilder<ExceptionMessage, Strin
         List<String> fieldList = Arrays.asList(message.split(txtFieldsSplitter));
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         exceptionMessage.setMessageType(fieldList.get(0));
-        exceptionMessage.setId(Long.parseLong(fieldList.get(1)));
+        Long id = fieldList.get(1).equals("") || Long.parseLong(fieldList.get(1)) == 0 ? null : Long.parseLong(fieldList.get(1));
+        exceptionMessage.setId(id);
         exceptionMessage.setMessage(fieldList.get(2));
         exceptionMessage.setTypeOfException(fieldList.get(3));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);

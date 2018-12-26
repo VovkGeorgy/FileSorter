@@ -15,7 +15,7 @@ public class JsonFileParser implements IFileParser {
 
     @Override
     public String getMessage(List<String> linesList) {
-        log.info("Parse input file lines");
+        log.debug("Parse input file lines {}", linesList);
         StringBuilder fullJsonStringBuilder = new StringBuilder("");
         linesList.forEach(fullJsonStringBuilder::append);
         String fullStringOfJsonFile = fullJsonStringBuilder.toString();

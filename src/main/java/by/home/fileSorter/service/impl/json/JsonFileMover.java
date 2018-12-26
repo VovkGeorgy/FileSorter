@@ -45,31 +45,23 @@ public class JsonFileMover implements IFileMover {
     @Value("${not.sorted.folder.path}")
     private String fromFolder;
 
+    private JSch jsch = new JSch();
+    private Session session = null;
+    private ChannelSftp sftpChannel = new ChannelSftp();
+
+
     @Override
     public boolean moveFile(boolean isValid, File file) {
-        log.info("Move files to path from property");
-        log.debug("Move files from {} isValid to {}, not valid to {} path", fromFolder, validToFolder,
+        log.info("Move file {}", file.getName());
+        log.debug("Move file from {} isValid to {}, not valid to {} path", fromFolder, validToFolder,
                 notValidToFolder);
         return isValid ? move(file, validToFolder) : move(file, notValidToFolder);
     }
 
     private boolean move(File file, String jsonRemoteFolderPath) {
-        JSch jsch = new JSch();
-        Session session = null;
-        ChannelSftp sftpChannel = new ChannelSftp();
         try {
-            log.info("Try to connect to server");
-            session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
-            session.setConfig(ftpConfigV1, ftpConfigV2);
-            session.setPassword(ftpPassword);
-            log.debug("Try to connect to session {}", session);
-            session.connect();
-            Channel channel = session.openChannel(ftpChanelType);
-            log.debug("Try to connect to chanel {}", channel);
-            channel.connect();
-            sftpChannel = (ChannelSftp) channel;
-            log.debug("Connecting to server is established");
-            log.info("Upload files to server");
+            log.info("Connecting to server");
+            ChannelSftp sftpChannel = configSftpConnection();
             sftpChannel.put(fromFolder + file.getName(), jsonRemoteFolderPath + file.getName());
             boolean resultOfDeleting = deleteOldFiles(file);
             log.debug("Old file are deleted - {}", resultOfDeleting);
@@ -78,18 +70,29 @@ public class JsonFileMover implements IFileMover {
             log.error("SFTP Connection exception {}", e.getMessage());
             return false;
         } catch (NullPointerException nul) {
-            log.debug("Connection session is NULL", nul.getMessage());
+            log.error("Connection session is NULL", nul.getMessage());
             return false;
         } finally {
             log.info("Close server connection");
             sftpChannel.exit();
             if (session != null) session.disconnect();
-            else log.debug("Connection session is NULL");
+            else log.error("Connection session is NULL");
         }
     }
 
+    private ChannelSftp configSftpConnection() throws JSchException {
+        session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
+        session.setConfig(ftpConfigV1, ftpConfigV2);
+        session.setPassword(ftpPassword);
+        session.connect();
+        Channel channel = session.openChannel(ftpChanelType);
+        channel.connect();
+        sftpChannel = (ChannelSftp) channel;
+        log.debug("Connecting to server is established");
+        return sftpChannel;
+    }
+
     private boolean deleteOldFiles(File file) {
-        log.info("Deleting old local files");
         return file.exists() && file.delete();
     }
 }

@@ -29,7 +29,6 @@ public class JsonValidityChecker implements IValidityChecker {
     public boolean isValid(String messageString, File messageFile) {
         if (isValidFile(messageString, messageFile)) {
             ErrorMessage errorMessage = errorMessageBuilder.build(messageString);
-            log.info("Try to check a object validity");
             if (isValidObject(errorMessage)) {
                 errorMessage.setFileName(messageFile.getName());
                 log.debug("Object {}, is isValid", errorMessage);
@@ -40,7 +39,6 @@ public class JsonValidityChecker implements IValidityChecker {
 
     private boolean isValidFile(String message, File messageFile) {
         try {
-            log.info("Try to check a file validity");
             ObjectMapper mapper = new ObjectMapper();
             mapper.readValue(message, ErrorMessage.class);
             log.debug("File {}, is isValid", messageFile.getPath());

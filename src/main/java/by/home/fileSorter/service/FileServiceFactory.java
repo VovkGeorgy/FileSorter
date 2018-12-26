@@ -19,11 +19,8 @@ public class FileServiceFactory {
     private final TxtProcessingService txtProcessingService;
     private final JsonProcessingService jsonProcessingService;
 
-    @Value("${json.file.extension}")
-    private String jsonFileExtension;
-
-    @Value("${txt.file.extension}")
-    private String txtFileExtension;
+    @Value("${array.of.extensions}")
+    private String[] filesExtensions;
 
     @Autowired
     public FileServiceFactory(TxtProcessingService txtProcessingService, JsonProcessingService jsonProcessingService) {
@@ -38,15 +35,8 @@ public class FileServiceFactory {
      * @return file processing service for input file
      */
     public AbstractFileProcessingService getFileService(File file) {
-        log.info("Getting file parser, depending of file in file ending");
-        AbstractFileProcessingService fileProcessingService = null;
-        if (FilenameUtils.getExtension(file.getName()).equals(txtFileExtension)) {
-            fileProcessingService = txtProcessingService;
-            log.debug("Getting file parser {} depending of file in list ending {}", txtProcessingService, file);
-        } else if (FilenameUtils.getExtension(file.getName()).equals(jsonFileExtension)) {
-            fileProcessingService = jsonProcessingService;
-            log.debug("Getting file parser {} depending of file in list ending {}", jsonProcessingService, file);
-        }
-        return fileProcessingService;
+        log.info("Getting file parser, depending of extension");
+        return FilenameUtils.getExtension(file.getName()).equals(filesExtensions[1]) ? jsonProcessingService :
+                FilenameUtils.getExtension(file.getName()).equals(filesExtensions[0]) ? txtProcessingService : null;
     }
 }

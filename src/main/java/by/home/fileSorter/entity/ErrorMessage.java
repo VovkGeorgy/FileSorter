@@ -13,5 +13,4 @@ public class ErrorMessage {
     private String typeOfError;
     private String throwingTime;
     private String fileName;
-
 }

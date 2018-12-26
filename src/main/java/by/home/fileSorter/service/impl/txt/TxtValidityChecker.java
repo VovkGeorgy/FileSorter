@@ -22,7 +22,11 @@ public class TxtValidityChecker implements IValidityChecker {
     @Value("${txt.fields.splitter}")
     private String txtFieldsSplitter;
 
+    @Value("${txt.fields.consist}")
+    private int txtFieldsConsist;
+
     private final ExceptionMessageBuilder exceptionMessageBuilder;
+    private ExceptionMessage exceptionMessage;
 
     @Autowired
     public TxtValidityChecker(ExceptionMessageBuilder exceptionMessageBuilder) {
@@ -33,21 +37,19 @@ public class TxtValidityChecker implements IValidityChecker {
     public boolean isValid(String message, File messageFile) {
         log.info("Check txt file validity");
         List<String> fieldList = Arrays.asList(message.split(txtFieldsSplitter));
-        if (isValidFile(fieldList)) {
-            ExceptionMessage exceptionMessage = exceptionMessageBuilder.build(message);
-            log.debug("File {} is isValid", messageFile.getName());
-            if (isValidObject(exceptionMessage)) {
-                exceptionMessage.setFileName(messageFile.getName());
-                return true;
-            } else return false;
-        } else return false;
+        return (isValidFile(fieldList, message)) && isValidObject(exceptionMessage);
     }
 
     private boolean isValidObject(ExceptionMessage exceptionMessage) {
-        return exceptionMessage != null && !exceptionMessage.getMessageType().isEmpty() && exceptionMessage.getId() != 0;
+        return exceptionMessage != null && !exceptionMessage.getMessageType().isEmpty() && exceptionMessage.getId() != null;
     }
 
-    private boolean isValidFile(List<String> fieldList) {
-        return fieldList.size() == 5;
+    private boolean isValidFile(List<String> fieldList, String message) {
+        if (fieldList.size() == txtFieldsConsist) {
+            exceptionMessage = exceptionMessageBuilder.build(message);
+            return true;
+        }
+        return false;
     }
 }
+
