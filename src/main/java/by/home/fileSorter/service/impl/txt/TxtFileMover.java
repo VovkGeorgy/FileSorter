@@ -32,7 +32,6 @@ public class TxtFileMover implements IFileMover {
     }
 
     private boolean move(File file, String toFolder) {
-        log.info("Try to moving files");
         String fromPath = fromFolder + file.getName();
         String toPath = toFolder + file.getName();
         try {

@@ -1,6 +1,7 @@
 package by.home.fileSorter;
 
 import by.home.fileSorter.config.AppConfig;
+import by.home.fileSorter.service.SorterRunnerService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**

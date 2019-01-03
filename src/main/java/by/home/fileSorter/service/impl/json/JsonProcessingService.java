@@ -19,21 +19,24 @@ import java.io.File;
 @Service
 public class JsonProcessingService extends AbstractFileProcessingService {
     private final FileManager fileManager;
-    private final IFileParser iFileParser;
-    private final IValidityChecker iValidityChecker;
-    private final IFileMover iFileMover;
+    private final IFileParser fileParser;
+    private final IValidityChecker validityChecker;
+    private final IFileMover fileMover;
 
     @Autowired
-    public JsonProcessingService(FileManager fileManager, @Qualifier("jsonFileParser") IFileParser iFileParser, @Qualifier("jsonValidityChecker") IValidityChecker iValidityChecker, @Qualifier("jsonFileMover") IFileMover iFileMover) {
+    public JsonProcessingService(FileManager fileManager,
+                                 @Qualifier("jsonFileParser") IFileParser fileParser,
+                                 @Qualifier("jsonValidityChecker") IValidityChecker validityChecker,
+                                 @Qualifier("jsonFileMover") IFileMover fileMover) {
         this.fileManager = fileManager;
-        this.iFileParser = iFileParser;
-        this.iValidityChecker = iValidityChecker;
-        this.iFileMover = iFileMover;
+        this.fileParser = fileParser;
+        this.validityChecker = validityChecker;
+        this.fileMover = fileMover;
     }
 
     @Override
     public void process(File file) {
-        log.info("Process json file {}", file);
-        iFileMover.moveFile(iValidityChecker.isValid(iFileParser.getMessage(fileManager.readFile(file)), file), file);
+        log.info("Process json file {}", file.getName());
+        fileMover.moveFile(validityChecker.isValid(fileParser.getMessage(fileManager.readFile(file)), file), file);
     }
 }

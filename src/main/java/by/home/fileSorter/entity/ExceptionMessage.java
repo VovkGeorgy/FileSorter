@@ -16,5 +16,3 @@ public class ExceptionMessage {
     private LocalDate throwingTime;
     private String fileName;
 }
-
-

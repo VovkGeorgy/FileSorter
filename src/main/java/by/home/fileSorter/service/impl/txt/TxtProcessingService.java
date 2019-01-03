@@ -20,22 +20,21 @@ import java.io.File;
 @Service
 public class TxtProcessingService extends AbstractFileProcessingService {
     private final FileManager fileManager;
-    private final IFileParser iFileParser;
-    private final IValidityChecker iValidityChecker;
-    private final IFileMover iFileMover;
+    private final IFileParser fileParser;
+    private final IValidityChecker validityChecker;
+    private final IFileMover fileMover;
 
     @Autowired
-    public TxtProcessingService(FileManager fileManager, @Qualifier("txtFileParser") IFileParser iFileParser, @Qualifier("txtValidityChecker") IValidityChecker iValidityChecker, @Qualifier("txtFileMover") IFileMover iFileMover) {
+    public TxtProcessingService(FileManager fileManager, @Qualifier("txtFileParser") IFileParser fileParser, @Qualifier("txtValidityChecker") IValidityChecker validityChecker, @Qualifier("txtFileMover") IFileMover fileMover) {
         this.fileManager = fileManager;
-        this.iFileParser = iFileParser;
-        this.iValidityChecker = iValidityChecker;
-        this.iFileMover = iFileMover;
+        this.fileParser = fileParser;
+        this.validityChecker = validityChecker;
+        this.fileMover = fileMover;
     }
 
     @Override
     public void process(File file) {
-        log.info("Begin file handling");
-        iFileMover.moveFile(iValidityChecker.isValid(iFileParser.getMessage(fileManager.readFile(file)), file), file);
-        log.info("End file handling");
+        log.info("Process txt file {}", file.getName());
+        fileMover.moveFile(validityChecker.isValid(fileParser.getMessage(fileManager.readFile(file)), file), file);
     }
 }

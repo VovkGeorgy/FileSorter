@@ -22,8 +22,8 @@ public class TxtValidityChecker implements IValidityChecker {
     @Value("${txt.fields.splitter}")
     private String txtFieldsSplitter;
 
-    @Value("${txt.fields.consist}")
-    private int txtFieldsConsist;
+    @Value("${txt.fields.number}")
+    private int txtFieldsNumber;
 
     private final ExceptionMessageBuilder exceptionMessageBuilder;
     private ExceptionMessage exceptionMessage;
@@ -45,7 +45,7 @@ public class TxtValidityChecker implements IValidityChecker {
     }
 
     private boolean isValidFile(List<String> fieldList, String message) {
-        if (fieldList.size() == txtFieldsConsist) {
+        if (fieldList.size() == txtFieldsNumber) {
             exceptionMessage = exceptionMessageBuilder.build(message);
             return true;
         }

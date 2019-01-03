@@ -31,24 +31,23 @@ public class FileManager {
     private String[] filesExtensions;
 
     /**
-     * Method get Files By Extensions
+     * Method get list of Files By Extensions
      *
      * @return files
      */
-    public List<File> getFilesByExtension() {
+    public List<File> getFilesByExtensions() {
         Iterator<File> it = FileUtils.iterateFiles(new File(fromFolder), filesExtensions, false);
+        log.debug("Get files from folder", fromFolder);
+        ArrayList<File> receivedFiles = new ArrayList<>();
         try {
-            ArrayList<File> receivedFiles = new ArrayList<>();
-            for (int files = 0; files < maxReadFiles; files++) {
+            for (int filesCount = 0; filesCount < maxReadFiles; filesCount++) {
                 if (it.hasNext()) receivedFiles.add(it.next());
                 else break;
             }
-            log.debug("Get files {} with extensions {}", receivedFiles, filesExtensions);
-            return receivedFiles;
         } catch (NoSuchElementException ex) {
             log.error("There is {}, no file with extensions {}", fromFolder, filesExtensions);
-            return new ArrayList<>();
         }
+        return receivedFiles;
     }
 
     /**
@@ -58,7 +57,7 @@ public class FileManager {
      * @return all lines from file in List
      */
     public List<String> readFile(File file) {
-        log.info("Try to read file {}", file.getName());
+        log.debug("Try to read file {}", file.getName());
         try {
             log.debug("Try to read file from path {}", file.getPath());
             return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);

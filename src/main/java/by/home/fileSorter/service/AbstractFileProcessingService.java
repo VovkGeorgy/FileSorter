@@ -7,9 +7,9 @@ import java.io.File;
  */
 public abstract class AbstractFileProcessingService {
     /**
-     * Method processing handling of json file
+     * Method processing handling of file
      *
-     * @param file input json file
+     * @param file input file
      */
     public abstract void process(File file);
 }
