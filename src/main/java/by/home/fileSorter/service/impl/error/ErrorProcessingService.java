@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * Class control services of error file handling
+ * Class control services of error entity handing
  */
 @Slf4j
 @Service
@@ -26,6 +26,12 @@ public class ErrorProcessingService implements IProcessingService<ErrorMessage> 
         this.errorFileMover = errorFileMover;
     }
 
+    /**
+     * Method consist services for handing error entity
+     *
+     * @param errorMessage error entity
+     * @return result of work (true - positive, false - negative)
+     */
     public boolean process(ErrorMessage errorMessage) {
         return errorFileMover.moveFile(new File(inputFolderPath + errorMessage.getFileName()), errorMessage.isValid());
     }

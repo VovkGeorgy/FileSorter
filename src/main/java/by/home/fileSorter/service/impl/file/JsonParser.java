@@ -10,10 +10,19 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * JSON format file parser
+ */
 @Slf4j
 @Service
 public class JsonParser implements IReportParser<ErrorMessage> {
 
+    /**
+     * Method parse json input file
+     *
+     * @param file input file
+     * @return entity from parsed file
+     */
     @Override
     public ErrorMessage parseFile(File file) {
         ObjectMapper objectMapper = new ObjectMapper();

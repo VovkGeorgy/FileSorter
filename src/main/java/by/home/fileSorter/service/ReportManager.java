@@ -27,14 +27,15 @@ public class ReportManager {
     private String[] filesExtensions;
 
     /**
-     * Method get list of Files By Extensions
+     * Method get list of files By extensions
      *
      * @return files
      */
     List<File> getFilesByExtensions() {
         Iterator<File> it = FileUtils.iterateFiles(new File(fromFolder), filesExtensions, false);
-        log.debug("Get files from folder", fromFolder);
+        log.info("Get files from folder", fromFolder);
         ArrayList<File> receivedFiles = new ArrayList<>();
+        log.debug("Get {} files by {} extensions", receivedFiles.size(), filesExtensions.length);
         for (int filesCount = 0; filesCount < maxReadFiles; filesCount++) {
             if (it.hasNext()) receivedFiles.add(it.next());
             else break;

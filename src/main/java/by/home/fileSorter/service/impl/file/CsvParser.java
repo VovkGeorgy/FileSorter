@@ -17,12 +17,22 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
+/**
+ * CSV format file parser
+ */
 @Slf4j
 @Service
 public class CsvParser implements IReportParser<ExceptionMessage> {
 
+    /**
+     * Method parse input csv file
+     *
+     * @param file file to parse
+     * @return entity from parsed file
+     */
     @Override
     public ExceptionMessage parseFile(File file) {
+        log.info("Try to parse csv file {}", file.getName());
         Iterable<CSVRecord> records;
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         try {
@@ -38,6 +48,7 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                 exceptionMessage.setFileName(file.getName());
                 exceptionMessage.setValid(true);
             }
+            log.info("Done file {} parsing", file.getName());
         } catch (IOException | NullPointerException | DateTimeParseException e) {
             log.error("Can't parse file {}, get exception \n {}", file.getName(), e.getMessage());
             exceptionMessage.setValid(false);
