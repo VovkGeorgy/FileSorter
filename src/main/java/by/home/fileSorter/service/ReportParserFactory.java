@@ -11,6 +11,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class of parser services factory
+ */
 @Slf4j
 @Service
 public class ReportParserFactory {
@@ -24,6 +27,12 @@ public class ReportParserFactory {
         this.reportParsersMap.put("txt", csvParser);
     }
 
+    /**
+     * Method return entity of file parser depending of input file extension
+     *
+     * @param file input file
+     * @return file parser instance
+     */
     IReportParser getParser(File file) {
         return reportParsersMap.get(FilenameUtils.getExtension(file.getName()));
     }

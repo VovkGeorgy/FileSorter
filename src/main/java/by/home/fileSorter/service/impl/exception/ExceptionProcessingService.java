@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * Class control services of exception file handling
+ * Class control services of exception entity handling
  */
 @Slf4j
 @Service
@@ -26,6 +26,12 @@ public class ExceptionProcessingService implements IProcessingService<ExceptionM
         this.exceptionFileMover = exceptionFileMover;
     }
 
+    /**
+     * Method consist services for handing exception entity
+     *
+     * @param exceptionMessage exception entity
+     * @return result of work (true - positive, false - negative)
+     */
     public boolean process(ExceptionMessage exceptionMessage) {
         return exceptionFileMover.moveFile(new File(inputFolderPath + exceptionMessage.getFileName()), exceptionMessage.isValid
                 ());

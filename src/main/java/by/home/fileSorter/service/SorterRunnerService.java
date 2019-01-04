@@ -31,7 +31,7 @@ public class SorterRunnerService {
     }
 
     /**
-     * Method exist all program functions, to step by step working, and repeat evey 5 sec
+     * Method exist all program functions, to step by step working, and repeat evey 3 sec
      */
     @Scheduled(fixedDelayString = "${scan.delay}")
     public void runSorter() {
@@ -39,8 +39,7 @@ public class SorterRunnerService {
         if (files.isEmpty()) return;
         files.forEach(file -> {
             AbstractMessage message = reportParserFactory.getParser(file).parseFile(file);
-            IProcessingService service = messageServiceFactory.getMessageService(message);
-            service.process(message);
+            boolean result = messageServiceFactory.getMessageService(message).process(message);
         });
     }
 }

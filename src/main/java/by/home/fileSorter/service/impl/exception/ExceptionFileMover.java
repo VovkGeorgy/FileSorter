@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 /**
  * Class realise method which move file
  */
@@ -20,27 +18,28 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class ExceptionFileMover implements IFileMover {
 
     @Value("${exception.valid.folder.path}")
-    private String validToFolder;
+    private String validOutputFolder;
 
     @Value("${exception.not.valid.folder.path}")
-    private String notValidToFolder;
+    private String notValidOutputFolder;
 
     @Value("${input.folder.path}")
-    private String fromFolder;
+    private String inputFolder;
 
     @Override
     public boolean moveFile(File file, boolean isValid) {
-        return isValid ? move(file, validToFolder) : move(file, notValidToFolder);
+        return isValid ? move(file, validOutputFolder) : move(file, notValidOutputFolder);
     }
 
-    private boolean move(File file, String toFolder) {
-        String fromPath = fromFolder + file.getName();
-        String toPath = toFolder + file.getName();
+    private boolean move(File file, String outFolder) {
+        String fromPath = inputFolder + file.getName();
+        String outPath = outFolder + file.getName();
         try {
-            log.debug("Try to move file {}, to {}", fromPath, toPath);
-            Files.move(Paths.get(fromPath), Paths.get(toPath), REPLACE_EXISTING);
+            log.debug("Try to move file {}, to {}", fromPath, outPath);
+            Files.move(Paths.get(fromPath), Paths.get(outPath));
         } catch (IOException e) {
-            log.error("Get exception with moving files from {}, to {}", fromPath, toPath);
+            e.printStackTrace();
+            log.error("Get exception\n {} \nwith moving files from {}, to {}", e.getLocalizedMessage(), fromPath, outPath);
             return false;
         }
         return true;
