@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 @Slf4j
@@ -37,8 +38,8 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                 exceptionMessage.setFileName(file.getName());
                 exceptionMessage.setValid(true);
             }
-        } catch (IOException | NullPointerException e) {
-            log.error("Can't parse file {}", file.getName());
+        } catch (IOException | NullPointerException | DateTimeParseException e) {
+            log.error("Can't parse file {}, get exception \n {}", file.getName(), e.getMessage());
             exceptionMessage.setValid(false);
             exceptionMessage.setFileName(file.getName());
         }

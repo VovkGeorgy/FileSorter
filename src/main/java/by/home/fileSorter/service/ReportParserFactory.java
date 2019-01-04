@@ -8,17 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Service
 public class ReportParserFactory {
-    private Map<String, IReportParser> reportParsersMap;
+    private Map<String, IReportParser> reportParsersMap = new HashMap<>();
 
     @Autowired
     public ReportParserFactory(JsonParser jsonParser, CsvParser csvParser) {
         this.reportParsersMap.put("json", jsonParser);
+        this.reportParsersMap.put("msg", jsonParser);
         this.reportParsersMap.put("csv", csvParser);
+        this.reportParsersMap.put("txt", csvParser);
     }
 
     IReportParser getParser(File file) {
