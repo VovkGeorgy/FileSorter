@@ -15,5 +15,5 @@ public class ErrorMessage extends AbstractMessage {
     private String typeOfError;
     private String throwingTime;
     private String fileName;
-    private boolean validity;
+    private boolean valid;
 }

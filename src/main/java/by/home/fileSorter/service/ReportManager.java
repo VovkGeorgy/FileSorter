@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class ReportManager {
 
-    @Value("${not.sorted.folder.path}")
+    @Value("${input.folder.path}")
     private String fromFolder;
 
     @Value("${max.read.files}")
