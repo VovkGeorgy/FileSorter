@@ -22,12 +22,12 @@ public class JsonParser implements IReportParser<ErrorMessage> {
             errorMessage = objectMapper.readValue(file, new TypeReference<ErrorMessage>() {
             });
             errorMessage.setFileName(file.getName());
-            errorMessage.setValidity(true);
+            errorMessage.setValid(true);
             return errorMessage;
         } catch (IOException e) {
             log.error("Cant parse file {}, IOException \n", file.getName(), e.getMessage());
             errorMessage.setFileName(file.getName());
-            errorMessage.setValidity(false);
+            errorMessage.setValid(false);
             return new ErrorMessage();
         }
     }

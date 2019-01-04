@@ -19,13 +19,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Service
 public class ExceptionFileMover implements IFileMover {
 
-    @Value("${txt.valid.folder.path}")
+    @Value("${exception.valid.folder.path}")
     private String validToFolder;
 
-    @Value("${txt.not.valid.folder.path}")
+    @Value("${exception.not.valid.folder.path}")
     private String notValidToFolder;
 
-    @Value("${not.sorted.folder.path}")
+    @Value("${input.folder.path}")
     private String fromFolder;
 
     @Override

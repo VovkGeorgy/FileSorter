@@ -35,11 +35,11 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
                 exceptionMessage.setThrowingTime(LocalDate.parse(record.get("throwingTime"), formatter));
                 exceptionMessage.setFileName(file.getName());
-                exceptionMessage.setValidity(true);
+                exceptionMessage.setValid(true);
             }
         } catch (IOException | NullPointerException e) {
             log.error("Can't parse file {}", file.getName());
-            exceptionMessage.setValidity(false);
+            exceptionMessage.setValid(false);
             exceptionMessage.setFileName(file.getName());
         }
         return exceptionMessage;

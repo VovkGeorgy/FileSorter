@@ -17,5 +17,5 @@ public class ExceptionMessage extends AbstractMessage {
     private String typeOfException;
     private LocalDate throwingTime;
     private String fileName;
-    private boolean validity;
+    private boolean valid;
 }

@@ -15,10 +15,10 @@ import java.io.File;
 @Slf4j
 public class ErrorFileMover implements IFileMover {
 
-    @Value("${json.sftp.valid.folder.path}")
+    @Value("${error.sftp.valid.folder.path}")
     private String validToFolder;
 
-    @Value("${json.sftp.not.valid.folder.path}")
+    @Value("${error.sftp.not.valid.folder.path}")
     private String notValidToFolder;
 
     @Value("${ftp.username}")
@@ -42,7 +42,7 @@ public class ErrorFileMover implements IFileMover {
     @Value("${ftp.chanel.type}")
     private String ftpChanelType;
 
-    @Value("${not.sorted.folder.path}")
+    @Value("${input.folder.path}")
     private String fromFolder;
 
     private JSch jsch = new JSch();
