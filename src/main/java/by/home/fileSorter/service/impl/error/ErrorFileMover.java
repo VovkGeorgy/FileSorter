@@ -1,4 +1,4 @@
-package by.home.fileSorter.service.impl.json;
+package by.home.fileSorter.service.impl.error;
 
 import by.home.fileSorter.service.IFileMover;
 import com.jcraft.jsch.*;
@@ -13,7 +13,7 @@ import java.io.File;
  */
 @Service
 @Slf4j
-public class JsonFileMover implements IFileMover {
+public class ErrorFileMover implements IFileMover {
 
     @Value("${json.sftp.valid.folder.path}")
     private String validToFolder;
@@ -51,7 +51,7 @@ public class JsonFileMover implements IFileMover {
 
 
     @Override
-    public boolean moveFile(boolean isValid, File file) {
+    public boolean moveFile(File file, boolean isValid) {
         log.info("Move file {}", file.getName());
         log.debug("Move file from {} isValid to {}, not valid to {} path", fromFolder, validToFolder,
                 notValidToFolder);

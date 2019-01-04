@@ -10,8 +10,8 @@ public interface IFileMover {
     /**
      * Method move sorted files in local or remote storage
      *
-     * @param isValid file validity
      * @param file file which move
+     * @param isValid file validity
      */
-    boolean moveFile(boolean isValid, File file);
+    boolean moveFile(File file, boolean isValid);
 }

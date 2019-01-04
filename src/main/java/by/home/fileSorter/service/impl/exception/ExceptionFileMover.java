@@ -1,4 +1,4 @@
-package by.home.fileSorter.service.impl.txt;
+package by.home.fileSorter.service.impl.exception;
 
 import by.home.fileSorter.service.IFileMover;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +10,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 /**
  * Class realise method which move file
  */
 @Slf4j
 @Service
-public class TxtFileMover implements IFileMover {
+public class ExceptionFileMover implements IFileMover {
 
     @Value("${txt.valid.folder.path}")
     private String validToFolder;
@@ -27,7 +29,7 @@ public class TxtFileMover implements IFileMover {
     private String fromFolder;
 
     @Override
-    public boolean moveFile(boolean isValid, File file) {
+    public boolean moveFile(File file, boolean isValid) {
         return isValid ? move(file, validToFolder) : move(file, notValidToFolder);
     }
 
@@ -36,7 +38,7 @@ public class TxtFileMover implements IFileMover {
         String toPath = toFolder + file.getName();
         try {
             log.debug("Try to move file {}, to {}", fromPath, toPath);
-            Files.move(Paths.get(fromPath), Paths.get(toPath));
+            Files.move(Paths.get(fromPath), Paths.get(toPath), REPLACE_EXISTING);
         } catch (IOException e) {
             log.error("Get exception with moving files from {}, to {}", fromPath, toPath);
             return false;

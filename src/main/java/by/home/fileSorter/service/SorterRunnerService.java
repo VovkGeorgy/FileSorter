@@ -1,6 +1,6 @@
 package by.home.fileSorter.service;
 
-import by.home.fileSorter.service.file.FileManager;
+import by.home.fileSorter.entity.AbstractMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,13 +18,16 @@ import java.util.List;
 @EnableScheduling
 public class SorterRunnerService {
 
-    private FileManager fileManager;
-    private FileServiceFactory fileServiceFactory;
+    private final ReportManager reportManager;
+    private final ReportParserFactory reportParserFactory;
+    private final MessageServiceFactory messageServiceFactory;
 
     @Autowired
-    public SorterRunnerService(FileManager fileManager, FileServiceFactory fileServiceFactory) {
-        this.fileManager = fileManager;
-        this.fileServiceFactory = fileServiceFactory;
+    public SorterRunnerService(ReportManager reportManager, ReportParserFactory reportParserFactory, MessageServiceFactory
+            messageServiceFactory) {
+        this.reportManager = reportManager;
+        this.reportParserFactory = reportParserFactory;
+        this.messageServiceFactory = messageServiceFactory;
     }
 
     /**
@@ -32,8 +35,12 @@ public class SorterRunnerService {
      */
     @Scheduled(fixedDelayString = "${scan.delay}")
     public void runSorter() {
-        List<File> files = fileManager.getFilesByExtensions();
+        List<File> files = reportManager.getFilesByExtensions();
         if (files.isEmpty()) return;
-        files.forEach(file -> fileServiceFactory.getFileService(file).process(file));
+        files.forEach(file -> {
+            AbstractMessage message = reportParserFactory.getParser(file).parseFile(file);
+            IProcessingService service = messageServiceFactory.getMessageService(message);
+            service.process(message);
+        });
     }
 }
