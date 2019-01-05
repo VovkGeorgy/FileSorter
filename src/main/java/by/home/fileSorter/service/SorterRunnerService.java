@@ -40,6 +40,7 @@ public class SorterRunnerService {
         files.forEach(file -> {
             AbstractMessage message = reportParserFactory.getParser(file).parseFile(file);
             boolean result = messageServiceFactory.getMessageService(message).process(message);
+            log.info("File {} is processed  - {}", file.getName(), result);
         });
     }
 }

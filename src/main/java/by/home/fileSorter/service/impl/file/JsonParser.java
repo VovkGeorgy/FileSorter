@@ -26,18 +26,18 @@ public class JsonParser implements IReportParser<ErrorMessage> {
     @Override
     public ErrorMessage parseFile(File file) {
         ObjectMapper objectMapper = new ObjectMapper();
-        ErrorMessage errorMessage = new ErrorMessage();
         try {
-            errorMessage = objectMapper.readValue(file, new TypeReference<ErrorMessage>() {
+            ErrorMessage errorMessage = objectMapper.readValue(file, new TypeReference<ErrorMessage>() {
             });
             errorMessage.setFileName(file.getName());
             errorMessage.setValid(true);
             return errorMessage;
         } catch (IOException e) {
             log.error("Cant parse file {}, IOException \n", file.getName(), e.getMessage());
-            errorMessage.setFileName(file.getName());
-            errorMessage.setValid(false);
-            return new ErrorMessage();
+            ErrorMessage notValidErrorMessage = new ErrorMessage();
+            notValidErrorMessage.setFileName(file.getName());
+            notValidErrorMessage.setValid(false);
+            return notValidErrorMessage;
         }
     }
 }

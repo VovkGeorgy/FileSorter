@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 /**
  * Class realise method which move file
  */
@@ -36,7 +38,7 @@ public class ExceptionFileMover implements IFileMover {
         String outPath = outFolder + file.getName();
         try {
             log.debug("Try to move file {}, to {}", fromPath, outPath);
-            Files.move(Paths.get(fromPath), Paths.get(outPath));
+            Files.move(Paths.get(fromPath), Paths.get(outPath), REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Get exception\n {} \nwith moving files from {}, to {}", e.getLocalizedMessage(), fromPath, outPath);
