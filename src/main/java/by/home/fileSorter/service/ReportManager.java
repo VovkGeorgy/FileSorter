@@ -33,7 +33,7 @@ public class ReportManager {
      */
     List<File> getFilesByExtensions() {
         Iterator<File> it = FileUtils.iterateFiles(new File(fromFolder), filesExtensions, false);
-        log.info("Get files from folder", fromFolder);
+        log.info("Scan files in folder {}", fromFolder);
         ArrayList<File> receivedFiles = new ArrayList<>();
         log.debug("Get {} files by {} extensions", receivedFiles.size(), filesExtensions.length);
         for (int filesCount = 0; filesCount < maxReadFiles; filesCount++) {

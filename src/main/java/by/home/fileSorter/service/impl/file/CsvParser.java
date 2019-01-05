@@ -48,11 +48,13 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                 exceptionMessage.setValid(true);
             }
             log.info("Done file {} parsing", file.getName());
-        } catch (IOException | NullPointerException | DateTimeParseException e) {
+            return exceptionMessage;
+        } catch (IOException | NullPointerException | DateTimeParseException | IllegalArgumentException e) {
             log.error("Can't parse file {}, get exception \n {}", file.getName(), e.getMessage());
-            exceptionMessage.setValid(false);
-            exceptionMessage.setFileName(file.getName());
+            ExceptionMessage notValidExceptionMessage = new ExceptionMessage();
+            notValidExceptionMessage.setValid(false);
+            notValidExceptionMessage.setFileName(file.getName());
+            return notValidExceptionMessage;
         }
-        return exceptionMessage;
     }
 }
