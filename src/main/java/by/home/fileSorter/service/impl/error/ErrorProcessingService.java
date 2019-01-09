@@ -2,6 +2,7 @@ package by.home.fileSorter.service.impl.error;
 
 import by.home.fileSorter.entity.ErrorMessage;
 import by.home.fileSorter.service.IProcessingService;
+import by.home.fileSorter.service.SftpService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +20,17 @@ public class ErrorProcessingService implements IProcessingService<ErrorMessage> 
     @Value("${input.folder.path}")
     private String inputFolderPath;
 
-    private final ErrorFileMover errorFileMover;
+    @Value("${error.sftp.valid.folder.path}")
+    private String validOutFolderPath;
+
+    @Value("${error.sftp.not.valid.folder.path}")
+    private String notValidOutFolderPath;
+
+    private final SftpService sftpService;
 
     @Autowired
-    public ErrorProcessingService(ErrorFileMover errorFileMover) {
-        this.errorFileMover = errorFileMover;
+    public ErrorProcessingService(SftpService sftpService) {
+        this.sftpService = sftpService;
     }
 
     /**
@@ -33,6 +40,12 @@ public class ErrorProcessingService implements IProcessingService<ErrorMessage> 
      * @return result of work (true - positive, false - negative)
      */
     public boolean process(ErrorMessage errorMessage) {
-        return errorFileMover.moveFile(new File(inputFolderPath + errorMessage.getFileName()), errorMessage.isValid());
+        String fileName = errorMessage.getFileName();
+
+        return errorMessage.isValid() ?
+                sftpService.moveFile(new File(inputFolderPath + errorMessage.getFileName()),
+                        inputFolderPath + fileName, validOutFolderPath + fileName) :
+                sftpService.moveFile(new File(inputFolderPath + errorMessage.getFileName()),
+                        inputFolderPath + fileName, notValidOutFolderPath + fileName);
     }
 }

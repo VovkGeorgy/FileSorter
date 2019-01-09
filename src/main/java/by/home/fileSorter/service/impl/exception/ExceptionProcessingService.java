@@ -2,6 +2,7 @@ package by.home.fileSorter.service.impl.exception;
 
 import by.home.fileSorter.entity.ExceptionMessage;
 import by.home.fileSorter.service.IProcessingService;
+import by.home.fileSorter.service.impl.file.LocalFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +20,23 @@ public class ExceptionProcessingService implements IProcessingService<ExceptionM
     @Value("${input.folder.path}")
     private String inputFolderPath;
 
-    private final ExceptionFileMover exceptionFileMover;
+    @Value("${exception.valid.folder.path}")
+    private String validOutputFolderPath;
+
+    @Value("${exception.not.valid.folder.path}")
+    private String notValidOutputFolderPath;
+
+    @Value("${max.read.files}")
+    private int maxReadFiles;
+
+    @Value("${array.of.extensions}")
+    private String[] filesExtensions;
+
+    private final LocalFileService localFIleService;
 
     @Autowired
-    public ExceptionProcessingService(ExceptionFileMover exceptionFileMover) {
-        this.exceptionFileMover = exceptionFileMover;
+    public ExceptionProcessingService(LocalFileService localFIleService) {
+        this.localFIleService = localFIleService;
     }
 
     /**
@@ -33,7 +46,11 @@ public class ExceptionProcessingService implements IProcessingService<ExceptionM
      * @return result of work (true - positive, false - negative)
      */
     public boolean process(ExceptionMessage exceptionMessage) {
-        return exceptionFileMover.moveFile(new File(inputFolderPath + exceptionMessage.getFileName()), exceptionMessage.isValid
-                ());
+        String fileName = exceptionMessage.getFileName();
+        return exceptionMessage.isValid() ?
+                localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
+                        , validOutputFolderPath + fileName) :
+                localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
+                        , notValidOutputFolderPath + fileName);
     }
 }

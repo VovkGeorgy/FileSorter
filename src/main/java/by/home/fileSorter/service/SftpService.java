@@ -1,6 +1,5 @@
-package by.home.fileSorter.service.impl.error;
+package by.home.fileSorter.service;
 
-import by.home.fileSorter.service.IFileMover;
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,60 +8,43 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * Class realise method which move JSON files
+ * Class realise method which move files to sftp server
  */
 @Service
 @Slf4j
-public class ErrorFileMover implements IFileMover {
+public class SftpService implements IFileService {
 
-    @Value("${error.sftp.valid.folder.path}")
-    private String validToFolder;
-
-    @Value("${error.sftp.not.valid.folder.path}")
-    private String notValidToFolder;
-
-    @Value("${ftp.username}")
+    @Value("${sftp.username}")
     private String ftpUsername;
 
-    @Value("${ftp.password}")
+    @Value("${sftp.password}")
     private String ftpPassword;
 
-    @Value("${ftp.host}")
+    @Value("${sftp.host}")
     private String ftpHost;
 
-    @Value("${ftp.port}")
+    @Value("${sftp.port}")
     private Integer ftpPort;
 
-    @Value("${ftp.config.v1}")
+    @Value("${sftp.config.v1}")
     private String ftpConfigV1;
 
-    @Value("${ftp.config.v2}")
+    @Value("${sftp.config.v2}")
     private String ftpConfigV2;
 
-    @Value("${ftp.chanel.type}")
+    @Value("${sftp.chanel.type}")
     private String ftpChanelType;
 
-    @Value("${input.folder.path}")
-    private String fromFolder;
-
-    private JSch jsch = new JSch();
     private Session session = null;
     private ChannelSftp sftpChannel = new ChannelSftp();
 
-
     @Override
-    public boolean moveFile(File file, boolean isValid) {
-        log.info("Move file {}", file.getName());
-        log.debug("Move file from {} isValid to {}, not valid to {} path", fromFolder, validToFolder,
-                notValidToFolder);
-        return isValid ? move(file, validToFolder) : move(file, notValidToFolder);
-    }
-
-    private boolean move(File file, String jsonRemoteFolderPath) {
+    public boolean moveFile(File file, String inputFolderPath, String outputFolderPath) {
         try {
             log.info("Connecting to server");
             ChannelSftp sftpChannel = configSftpConnection();
-            sftpChannel.put(fromFolder + file.getName(), jsonRemoteFolderPath + file.getName());
+            sftpChannel.put(inputFolderPath, outputFolderPath);
+            log.debug("Move file from {} to {} path", inputFolderPath, outputFolderPath);
             boolean resultOfDeleting = deleteOldFiles(file);
             log.debug("Old file are deleted - {}", resultOfDeleting);
             return true;
@@ -81,6 +63,7 @@ public class ErrorFileMover implements IFileMover {
     }
 
     private ChannelSftp configSftpConnection() throws JSchException {
+        JSch jsch = new JSch();
         session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
         session.setConfig(ftpConfigV1, ftpConfigV2);
         session.setPassword(ftpPassword);

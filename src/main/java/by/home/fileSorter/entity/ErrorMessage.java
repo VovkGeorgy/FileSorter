@@ -9,11 +9,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ErrorMessage extends AbstractMessage {
-    private String messageType;
-    private Long id;
-    private String message;
     private String typeOfError;
-    private String throwingTime;
-    private String fileName;
-    private boolean valid;
 }

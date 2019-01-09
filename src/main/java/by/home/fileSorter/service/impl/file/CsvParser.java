@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 
 /**
  * CSV format file parser
@@ -42,8 +39,7 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                 exceptionMessage.setId(Long.parseLong(record.get("id")));
                 exceptionMessage.setMessage(record.get("message"));
                 exceptionMessage.setTypeOfException(record.get("typeOfException"));
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-                exceptionMessage.setThrowingTime(LocalDate.parse(record.get("throwingTime"), formatter));
+                exceptionMessage.setThrowingTime(record.get("throwingTime"));
                 exceptionMessage.setFileName(file.getName());
                 exceptionMessage.setValid(true);
             }
