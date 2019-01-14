@@ -1,4 +1,4 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.report;
 
 import by.home.fileSorter.entity.AbstractMessage;
 

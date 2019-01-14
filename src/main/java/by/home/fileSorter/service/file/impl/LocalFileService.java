@@ -1,6 +1,6 @@
-package by.home.fileSorter.service.impl.file;
+package by.home.fileSorter.service.file.impl;
 
-import by.home.fileSorter.service.IFileService;
+import by.home.fileSorter.service.file.IFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
-package by.home.fileSorter.service.impl.file;
+package by.home.fileSorter.service.report.impl;
 
 import by.home.fileSorter.entity.ErrorMessage;
-import by.home.fileSorter.service.IReportParser;
+import by.home.fileSorter.service.report.IReportParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,9 @@
-package by.home.fileSorter.service.impl.exception;
+package by.home.fileSorter.service.report.impl;
 
 import by.home.fileSorter.entity.ExceptionMessage;
-import by.home.fileSorter.service.IProcessingService;
-import by.home.fileSorter.service.impl.file.LocalFileService;
+import by.home.fileSorter.service.file.IFileService;
+import by.home.fileSorter.service.file.impl.LocalFileService;
+import by.home.fileSorter.service.report.IReportProcessingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import java.io.File;
  */
 @Slf4j
 @Service
-public class ExceptionProcessingService implements IProcessingService<ExceptionMessage> {
+public class ExceptionReportProcessingService implements IReportProcessingService<ExceptionMessage> {
 
     @Value("${input.folder.path}")
     private String inputFolderPath;
@@ -26,16 +27,10 @@ public class ExceptionProcessingService implements IProcessingService<ExceptionM
     @Value("${exception.not.valid.folder.path}")
     private String notValidOutputFolderPath;
 
-    @Value("${max.read.files}")
-    private int maxReadFiles;
-
-    @Value("${array.of.extensions}")
-    private String[] filesExtensions;
-
-    private final LocalFileService localFIleService;
+    private final IFileService localFIleService;
 
     @Autowired
-    public ExceptionProcessingService(LocalFileService localFIleService) {
+    public ExceptionReportProcessingService(LocalFileService localFIleService) {
         this.localFIleService = localFIleService;
     }
 
@@ -47,10 +42,8 @@ public class ExceptionProcessingService implements IProcessingService<ExceptionM
      */
     public boolean process(ExceptionMessage exceptionMessage) {
         String fileName = exceptionMessage.getFileName();
-        return exceptionMessage.isValid() ?
-                localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
-                        , validOutputFolderPath + fileName) :
-                localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
-                        , notValidOutputFolderPath + fileName);
+        String targetFplderPath = exceptionMessage.isValid() ? validOutputFolderPath : notValidOutputFolderPath;
+        return localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
+                , targetFplderPath + fileName);
     }
 }

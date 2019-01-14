@@ -1,4 +1,4 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.report;
 
 import by.home.fileSorter.entity.AbstractMessage;
 
@@ -7,7 +7,7 @@ import by.home.fileSorter.entity.AbstractMessage;
  *
  * @param <T> type of message
  */
-public interface IProcessingService<T extends AbstractMessage> {
+public interface IReportProcessingService<T extends AbstractMessage> {
     /**
      * Method process entity with services
      *

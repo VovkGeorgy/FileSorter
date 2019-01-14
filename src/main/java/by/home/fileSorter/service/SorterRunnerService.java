@@ -1,7 +1,9 @@
 package by.home.fileSorter.service;
 
 import by.home.fileSorter.entity.AbstractMessage;
-import by.home.fileSorter.service.impl.file.LocalFileService;
+import by.home.fileSorter.service.file.impl.LocalFileService;
+import by.home.fileSorter.service.report.ReportParserFactory;
+import by.home.fileSorter.service.report.ReportServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +24,7 @@ public class SorterRunnerService {
 
     private final LocalFileService localFileService;
     private final ReportParserFactory reportParserFactory;
-    private final MessageServiceFactory messageServiceFactory;
+    private final ReportServiceFactory reportServiceFactory;
 
     @Value("${input.folder.path}")
     private String inputFolder;
@@ -34,11 +36,11 @@ public class SorterRunnerService {
     private String[] filesExtensions;
 
     @Autowired
-    public SorterRunnerService(LocalFileService localFileService, ReportParserFactory reportParserFactory, MessageServiceFactory
-            messageServiceFactory) {
+    public SorterRunnerService(LocalFileService localFileService, ReportParserFactory reportParserFactory, ReportServiceFactory
+            reportServiceFactory) {
         this.localFileService = localFileService;
         this.reportParserFactory = reportParserFactory;
-        this.messageServiceFactory = messageServiceFactory;
+        this.reportServiceFactory = reportServiceFactory;
     }
 
     /**
@@ -50,8 +52,8 @@ public class SorterRunnerService {
         if (files.isEmpty()) return;
         files.forEach(file -> {
             AbstractMessage message = reportParserFactory.getParser(file).parseFile(file);
-            boolean result = messageServiceFactory.getMessageService(message).process(message);
-            log.info("File {} is processed  - {}", file.getName(), result);
+            boolean result = reportServiceFactory.getMessageService(message).process(message);
+            log.debug("File {} is processed  - {}", file.getName(), result);
         });
     }
 }

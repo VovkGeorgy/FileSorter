@@ -1,4 +1,4 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.file;
 
 import java.io.File;
 

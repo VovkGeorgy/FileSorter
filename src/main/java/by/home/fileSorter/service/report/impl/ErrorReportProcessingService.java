@@ -1,8 +1,9 @@
-package by.home.fileSorter.service.impl.error;
+package by.home.fileSorter.service.report.impl;
 
 import by.home.fileSorter.entity.ErrorMessage;
-import by.home.fileSorter.service.IProcessingService;
-import by.home.fileSorter.service.SftpService;
+import by.home.fileSorter.service.file.IFileService;
+import by.home.fileSorter.service.file.impl.SftpFileService;
+import by.home.fileSorter.service.report.IReportProcessingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import java.io.File;
  */
 @Slf4j
 @Service
-public class ErrorProcessingService implements IProcessingService<ErrorMessage> {
+public class ErrorReportProcessingService implements IReportProcessingService<ErrorMessage> {
 
     @Value("${input.folder.path}")
     private String inputFolderPath;
@@ -26,11 +27,11 @@ public class ErrorProcessingService implements IProcessingService<ErrorMessage> 
     @Value("${error.sftp.not.valid.folder.path}")
     private String notValidOutFolderPath;
 
-    private final SftpService sftpService;
+    private final IFileService sftpFileService;
 
     @Autowired
-    public ErrorProcessingService(SftpService sftpService) {
-        this.sftpService = sftpService;
+    public ErrorReportProcessingService(SftpFileService sftpFileService) {
+        this.sftpFileService = sftpFileService;
     }
 
     /**
@@ -41,11 +42,8 @@ public class ErrorProcessingService implements IProcessingService<ErrorMessage> 
      */
     public boolean process(ErrorMessage errorMessage) {
         String fileName = errorMessage.getFileName();
-
-        return errorMessage.isValid() ?
-                sftpService.moveFile(new File(inputFolderPath + errorMessage.getFileName()),
-                        inputFolderPath + fileName, validOutFolderPath + fileName) :
-                sftpService.moveFile(new File(inputFolderPath + errorMessage.getFileName()),
-                        inputFolderPath + fileName, notValidOutFolderPath + fileName);
+        String targetFolderPath = errorMessage.isValid() ? validOutFolderPath : notValidOutFolderPath;
+        return sftpFileService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName,
+                targetFolderPath + fileName);
     }
 }

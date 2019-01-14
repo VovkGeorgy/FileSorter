@@ -1,7 +1,7 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.report;
 
-import by.home.fileSorter.service.impl.file.CsvParser;
-import by.home.fileSorter.service.impl.file.JsonParser;
+import by.home.fileSorter.service.report.impl.CsvParser;
+import by.home.fileSorter.service.report.impl.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class ReportParserFactory {
      * @param file input file
      * @return file parser instance
      */
-    IReportParser getParser(File file) {
+    public IReportParser getParser(File file) {
         return reportParsersMap.get(FilenameUtils.getExtension(file.getName()));
     }
 }

@@ -1,5 +1,6 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.file.impl;
 
+import by.home.fileSorter.service.file.IFileService;
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +13,7 @@ import java.io.File;
  */
 @Service
 @Slf4j
-public class SftpService implements IFileService {
+public class SftpFileService implements IFileService {
 
     @Value("${sftp.username}")
     private String ftpUsername;

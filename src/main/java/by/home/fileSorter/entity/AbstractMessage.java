@@ -12,5 +12,5 @@ public class AbstractMessage {
     private String message;
     private String throwingTime;
     private String fileName;
-    private boolean valid;
+    private boolean isValid;
 }

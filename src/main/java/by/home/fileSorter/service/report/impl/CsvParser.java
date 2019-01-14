@@ -1,8 +1,8 @@
-package by.home.fileSorter.service.impl.file;
+package by.home.fileSorter.service.report.impl;
 
 
 import by.home.fileSorter.entity.ExceptionMessage;
-import by.home.fileSorter.service.IReportParser;
+import by.home.fileSorter.service.report.IReportParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -34,15 +34,14 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
         ExceptionMessage exceptionMessage = new ExceptionMessage();
         try (Reader in = new FileReader(file)) {
             records = CSVFormat.RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
-            for (CSVRecord record : records) {
-                exceptionMessage.setMessageType(record.get("messageType"));
-                exceptionMessage.setId(Long.parseLong(record.get("id")));
-                exceptionMessage.setMessage(record.get("message"));
-                exceptionMessage.setTypeOfException(record.get("typeOfException"));
-                exceptionMessage.setThrowingTime(record.get("throwingTime"));
-                exceptionMessage.setFileName(file.getName());
-                exceptionMessage.setValid(true);
-            }
+            CSVRecord record = records.iterator().next();
+            exceptionMessage.setMessageType(record.get("messageType"));
+            exceptionMessage.setId(Long.parseLong(record.get("id")));
+            exceptionMessage.setMessage(record.get("message"));
+            exceptionMessage.setTypeOfException(record.get("typeOfException"));
+            exceptionMessage.setThrowingTime(record.get("throwingTime"));
+            exceptionMessage.setFileName(file.getName());
+            exceptionMessage.setValid(true);
             log.info("Done file {} parsing", file.getName());
             return exceptionMessage;
         } catch (IOException | NullPointerException | DateTimeParseException | IllegalArgumentException e) {

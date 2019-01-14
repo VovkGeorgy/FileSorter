@@ -1,9 +1,9 @@
-package by.home.fileSorter.service;
+package by.home.fileSorter.service.report;
 
 import by.home.fileSorter.entity.AbstractMessage;
 import by.home.fileSorter.entity.ExceptionMessage;
-import by.home.fileSorter.service.impl.error.ErrorProcessingService;
-import by.home.fileSorter.service.impl.exception.ExceptionProcessingService;
+import by.home.fileSorter.service.report.impl.ErrorReportProcessingService;
+import by.home.fileSorter.service.report.impl.ExceptionReportProcessingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class MessageServiceFactory {
-    private final ExceptionProcessingService exceptionProcessingService;
-    private final ErrorProcessingService errorProcessingService;
+public class ReportServiceFactory {
+    private final ExceptionReportProcessingService exceptionProcessingService;
+    private final ErrorReportProcessingService errorProcessingService;
 
     @Autowired
-    public MessageServiceFactory(ExceptionProcessingService exceptionProcessingService, ErrorProcessingService
+    public ReportServiceFactory(ExceptionReportProcessingService exceptionProcessingService, ErrorReportProcessingService
             errorProcessingService) {
         this.exceptionProcessingService = exceptionProcessingService;
         this.errorProcessingService = errorProcessingService;
@@ -30,7 +30,7 @@ public class MessageServiceFactory {
      * @param message message entity
      * @return message processing service for input message
      */
-    IProcessingService getMessageService(AbstractMessage message) {
+    public IReportProcessingService getMessageService(AbstractMessage message) {
         return (message instanceof ExceptionMessage) ? exceptionProcessingService : errorProcessingService;
     }
 }
