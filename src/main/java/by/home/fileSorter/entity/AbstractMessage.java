@@ -7,10 +7,10 @@ import lombok.Data;
  */
 @Data
 public class AbstractMessage {
-    private String messageType;
-    private Long id;
-    private String message;
-    private String throwingTime;
-    private String fileName;
-    private boolean isValid;
+    protected String messageType;
+    protected Long id;
+    protected String message;
+    protected String throwingTime;
+    protected String fileName;
+    protected boolean isValid;
 }

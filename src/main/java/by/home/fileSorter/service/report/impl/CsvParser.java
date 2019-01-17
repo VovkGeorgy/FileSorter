@@ -25,31 +25,28 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
      * Method parse input csv file
      *
      * @param file file to parse
-     * @return entity from parsed file
+     * @return entity from parsed file, or entity only with file name and false validity
      */
     @Override
     public ExceptionMessage parseFile(File file) {
-        log.info("Try to parse csv file {}", file.getName());
-        Iterable<CSVRecord> records;
-        ExceptionMessage exceptionMessage = new ExceptionMessage();
+        String filename = file.getName();
+        log.info("Try to parse csv file {}", filename);
         try (Reader in = new FileReader(file)) {
-            records = CSVFormat.RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
+            Iterable<CSVRecord> records = CSVFormat
+                    .RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
             CSVRecord record = records.iterator().next();
-            exceptionMessage.setMessageType(record.get("messageType"));
-            exceptionMessage.setId(Long.parseLong(record.get("id")));
-            exceptionMessage.setMessage(record.get("message"));
-            exceptionMessage.setTypeOfException(record.get("typeOfException"));
-            exceptionMessage.setThrowingTime(record.get("throwingTime"));
-            exceptionMessage.setFileName(file.getName());
-            exceptionMessage.setValid(true);
-            log.info("Done file {} parsing", file.getName());
-            return exceptionMessage;
+            return new ExceptionMessage(
+                    record.get("typeOfException"),
+                    record.get("messageType"),
+                    Long.parseLong(record.get("id")),
+                    record.get("message"),
+                    record.get("throwingTime"),
+                    filename,
+                    true
+            );
         } catch (IOException | NullPointerException | DateTimeParseException | IllegalArgumentException e) {
-            log.error("Can't parse file {}, get exception \n {}", file.getName(), e.getMessage());
-            ExceptionMessage notValidExceptionMessage = new ExceptionMessage();
-            notValidExceptionMessage.setValid(false);
-            notValidExceptionMessage.setFileName(file.getName());
-            return notValidExceptionMessage;
+            log.error("Can't parse file {}, get exception \n {}", filename, e.getMessage());
+            return new ExceptionMessage(filename, false);
         }
     }
 }

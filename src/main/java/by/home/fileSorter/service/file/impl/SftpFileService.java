@@ -6,13 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.io.File;
 
 /**
  * Class realise method which move files to sftp server
  */
-@Service
 @Slf4j
+@Service
 public class SftpFileService implements IFileService {
 
     @Value("${sftp.username}")
@@ -39,15 +40,23 @@ public class SftpFileService implements IFileService {
     private Session session = null;
     private ChannelSftp sftpChannel = new ChannelSftp();
 
+    @PreDestroy
+    public void connectionTeardown() {
+        log.info("Close server connection");
+        sftpChannel.exit();
+        if (session != null) session.disconnect();
+        else log.error("Connection session is NULL");
+    }
+
     @Override
     public boolean moveFile(File file, String inputFolderPath, String outputFolderPath) {
         try {
             log.info("Connecting to server");
-            ChannelSftp sftpChannel = configSftpConnection();
+            ChannelSftp sftpChannel = (session == null) ? configSftpConnection() : this.sftpChannel;
             sftpChannel.put(inputFolderPath, outputFolderPath);
             log.debug("Move file from {} to {} path", inputFolderPath, outputFolderPath);
             boolean resultOfDeleting = deleteOldFiles(file);
-            log.debug("Old file are deleted - {}", resultOfDeleting);
+            log.debug("Result of old files deleting is - ", resultOfDeleting);
             return true;
         } catch (JSchException | SftpException e) {
             log.error("SFTP Connection exception {}", e.getMessage());
@@ -55,11 +64,6 @@ public class SftpFileService implements IFileService {
         } catch (NullPointerException nul) {
             log.error("Connection session is NULL", nul.getMessage());
             return false;
-        } finally {
-            log.info("Close server connection");
-            sftpChannel.exit();
-            if (session != null) session.disconnect();
-            else log.error("Connection session is NULL");
         }
     }
 
