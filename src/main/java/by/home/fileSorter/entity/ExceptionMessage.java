@@ -3,13 +3,24 @@ package by.home.fileSorter.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * Exception message entity
  */
 @Data
+@Entity
 @EqualsAndHashCode(callSuper = true)
+@Table(name = "exception_message", schema = "public", catalog = "sorterBase")
 public class ExceptionMessage extends AbstractMessage {
+
+    @Column(name = "type_of_exception")
     private String typeOfException;
+
+    public ExceptionMessage() {
+    }
 
     public ExceptionMessage(String fileName, boolean isValid) {
         this.fileName = fileName;

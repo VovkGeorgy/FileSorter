@@ -1,6 +1,7 @@
 package by.home.fileSorter.service.report.impl;
 
 import by.home.fileSorter.entity.ExceptionMessage;
+import by.home.fileSorter.repository.ExceptionRepository;
 import by.home.fileSorter.service.file.IFileService;
 import by.home.fileSorter.service.file.impl.LocalFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
@@ -28,10 +29,12 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
     private String notValidOutputFolderPath;
 
     private final IFileService localFIleService;
+    private final ExceptionRepository exceptionRepository;
 
     @Autowired
-    public ExceptionReportProcessingService(LocalFileService localFIleService) {
+    public ExceptionReportProcessingService(LocalFileService localFIleService, ExceptionRepository exceptionRepository) {
         this.localFIleService = localFIleService;
+        this.exceptionRepository = exceptionRepository;
     }
 
     /**
@@ -42,6 +45,7 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
      */
     public boolean process(ExceptionMessage exceptionMessage) {
         String fileName = exceptionMessage.getFileName();
+        if (exceptionMessage.isValid()) exceptionRepository.save(exceptionMessage);
         String targetFplderPath = exceptionMessage.isValid() ? validOutputFolderPath : notValidOutputFolderPath;
         return localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
                 , targetFplderPath + fileName);

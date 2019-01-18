@@ -1,6 +1,7 @@
 package by.home.fileSorter.service.report.impl;
 
 import by.home.fileSorter.entity.ErrorMessage;
+import by.home.fileSorter.repository.ErrorRepository;
 import by.home.fileSorter.service.file.IFileService;
 import by.home.fileSorter.service.file.impl.SftpFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
@@ -28,10 +29,12 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
     private String notValidOutFolderPath;
 
     private final IFileService sftpFileService;
+    private final ErrorRepository errorRepository;
 
     @Autowired
-    public ErrorReportProcessingService(SftpFileService sftpFileService) {
+    public ErrorReportProcessingService(SftpFileService sftpFileService, ErrorRepository errorRepository) {
         this.sftpFileService = sftpFileService;
+        this.errorRepository = errorRepository;
     }
 
     /**
@@ -42,6 +45,7 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
      */
     public boolean process(ErrorMessage errorMessage) {
         String fileName = errorMessage.getFileName();
+        if (errorMessage.isValid()) errorRepository.save(errorMessage);
         String targetFolderPath = errorMessage.isValid() ? validOutFolderPath : notValidOutFolderPath;
         return sftpFileService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName,
                 targetFolderPath + fileName);
