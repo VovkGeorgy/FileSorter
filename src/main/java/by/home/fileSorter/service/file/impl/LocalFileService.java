@@ -23,7 +23,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class LocalFileService implements IFileService {
 
     @Override
-    public boolean moveFile(File file, String inputPath, String outputPath) {
+    public boolean moveFile(File file, String outputPath) {
+        String inputPath = file.getPath();
         try {
             log.debug("Try to move file {}, to {}", inputPath, outputPath);
             Files.move(Paths.get(inputPath), Paths.get(outputPath), REPLACE_EXISTING);

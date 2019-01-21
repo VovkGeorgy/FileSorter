@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 
@@ -37,50 +38,56 @@ public class SftpFileService implements IFileService {
     @Value("${sftp.chanel.type}")
     private String ftpChanelType;
 
-    private Session session = null;
-    private ChannelSftp sftpChannel = new ChannelSftp();
+    private Session session;
+    private ChannelSftp sftpChannel;
+
+    @PostConstruct
+    private void connectionInit() {
+        try {
+            log.info("Connecting to server");
+            JSch jsch = new JSch();
+            session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
+            session.setConfig(ftpConfigV1, ftpConfigV2);
+            session.setPassword(ftpPassword);
+            session.connect();
+            Channel channel = session.openChannel(ftpChanelType);
+            channel.connect();
+            sftpChannel = (ChannelSftp) channel;
+            log.debug("Connecting to server is established");
+        } catch (JSchException e) {
+            sftpChannel = null;
+            session = null;
+            log.error("SFTP Connection exception {}", e.getMessage());
+        }
+    }
 
     @PreDestroy
     public void connectionTeardown() {
         log.info("Close server connection");
-        sftpChannel.exit();
-        if (session != null) session.disconnect();
-        else log.error("Connection session is NULL");
+        if (session != null & sftpChannel != null) {
+            sftpChannel.exit();
+            session.disconnect();
+        } else log.error("Connection statements is NULL");
     }
 
     @Override
-    public boolean moveFile(File file, String inputFolderPath, String outputFolderPath) {
+    public boolean moveFile(File file, String outputFolderPath) {
         try {
-            log.info("Connecting to server");
-            ChannelSftp sftpChannel = (session == null) ? configSftpConnection() : this.sftpChannel;
+            String inputFolderPath = file.getPath();
             sftpChannel.put(inputFolderPath, outputFolderPath);
             log.debug("Move file from {} to {} path", inputFolderPath, outputFolderPath);
-            boolean resultOfDeleting = deleteOldFiles(file);
+            boolean resultOfDeleting = deleteLocalFiles(file);
             log.debug("Result of old files deleting is - ", resultOfDeleting);
             return true;
-        } catch (JSchException | SftpException e) {
+        } catch (SftpException | NullPointerException e) {
             log.error("SFTP Connection exception {}", e.getMessage());
-            return false;
-        } catch (NullPointerException nul) {
-            log.error("Connection session is NULL", nul.getMessage());
+            connectionTeardown();
+            connectionInit();
             return false;
         }
     }
 
-    private ChannelSftp configSftpConnection() throws JSchException {
-        JSch jsch = new JSch();
-        session = jsch.getSession(ftpUsername, ftpHost, ftpPort);
-        session.setConfig(ftpConfigV1, ftpConfigV2);
-        session.setPassword(ftpPassword);
-        session.connect();
-        Channel channel = session.openChannel(ftpChanelType);
-        channel.connect();
-        sftpChannel = (ChannelSftp) channel;
-        log.debug("Connecting to server is established");
-        return sftpChannel;
-    }
-
-    private boolean deleteOldFiles(File file) {
+    private boolean deleteLocalFiles(File file) {
         return file.exists() && file.delete();
     }
 }

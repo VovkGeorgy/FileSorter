@@ -3,7 +3,6 @@ package by.home.fileSorter.service.report.impl;
 import by.home.fileSorter.entity.ErrorMessage;
 import by.home.fileSorter.repository.ErrorRepository;
 import by.home.fileSorter.service.file.IFileService;
-import by.home.fileSorter.service.file.impl.SftpFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
     private final ErrorRepository errorRepository;
 
     @Autowired
-    public ErrorReportProcessingService(SftpFileService sftpFileService, ErrorRepository errorRepository) {
+    public ErrorReportProcessingService(IFileService sftpFileService, ErrorRepository errorRepository) {
         this.sftpFileService = sftpFileService;
         this.errorRepository = errorRepository;
     }
@@ -44,10 +43,16 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
      * @return result of work (true - positive, false - negative)
      */
     public boolean process(ErrorMessage errorMessage) {
+        if (errorMessage.isValid()) {
+            errorRepository.save(errorMessage);
+            return moveFiles(errorMessage, validOutFolderPath);
+        } else {
+            return moveFiles(errorMessage, notValidOutFolderPath);
+        }
+    }
+
+    private boolean moveFiles(ErrorMessage errorMessage, String targetFolderPath) {
         String fileName = errorMessage.getFileName();
-        if (errorMessage.isValid()) errorRepository.save(errorMessage);
-        String targetFolderPath = errorMessage.isValid() ? validOutFolderPath : notValidOutFolderPath;
-        return sftpFileService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName,
-                targetFolderPath + fileName);
+        return sftpFileService.moveFile(new File(inputFolderPath + fileName), targetFolderPath + fileName);
     }
 }

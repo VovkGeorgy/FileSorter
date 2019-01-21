@@ -3,7 +3,6 @@ package by.home.fileSorter.service.report.impl;
 import by.home.fileSorter.entity.ExceptionMessage;
 import by.home.fileSorter.repository.ExceptionRepository;
 import by.home.fileSorter.service.file.IFileService;
-import by.home.fileSorter.service.file.impl.LocalFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,12 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
     @Value("${exception.not.valid.folder.path}")
     private String notValidOutputFolderPath;
 
-    private final IFileService localFIleService;
+    private final IFileService localFileService;
     private final ExceptionRepository exceptionRepository;
 
     @Autowired
-    public ExceptionReportProcessingService(LocalFileService localFIleService, ExceptionRepository exceptionRepository) {
-        this.localFIleService = localFIleService;
+    public ExceptionReportProcessingService(IFileService localFileService, ExceptionRepository exceptionRepository) {
+        this.localFileService = localFileService;
         this.exceptionRepository = exceptionRepository;
     }
 
@@ -44,10 +43,16 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
      * @return result of work (true - positive, false - negative)
      */
     public boolean process(ExceptionMessage exceptionMessage) {
+        if (exceptionMessage.isValid()) {
+            exceptionRepository.save(exceptionMessage);
+            return moveFiles(exceptionMessage, validOutputFolderPath);
+        } else {
+            return moveFiles(exceptionMessage, notValidOutputFolderPath);
+        }
+    }
+
+    private boolean moveFiles(ExceptionMessage exceptionMessage, String targetFolderPath) {
         String fileName = exceptionMessage.getFileName();
-        if (exceptionMessage.isValid()) exceptionRepository.save(exceptionMessage);
-        String targetFplderPath = exceptionMessage.isValid() ? validOutputFolderPath : notValidOutputFolderPath;
-        return localFIleService.moveFile(new File(inputFolderPath + fileName), inputFolderPath + fileName
-                , targetFplderPath + fileName);
+        return localFileService.moveFile(new File(inputFolderPath + fileName), targetFolderPath + fileName);
     }
 }
