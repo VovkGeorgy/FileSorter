@@ -31,6 +31,7 @@ public class ReportServiceFactory {
      * @return message processing service for input message
      */
     public IReportProcessingService getMessageService(AbstractMessage message) {
+        log.info("Ge processing service for file {} message", message.getFileName());
         return (message instanceof ExceptionMessage) ? exceptionProcessingService : errorProcessingService;
     }
 }

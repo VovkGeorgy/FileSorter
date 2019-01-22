@@ -50,6 +50,7 @@ public class ReportParserFactory {
      * @return file parser instance
      */
     public IReportParser getParser(File file) {
+        log.info("Get parser for {} file", file.getName());
         return reportParsersMap.get(reportParsersMap.keySet().stream()
                 .filter(list -> list.contains(FilenameUtils.getExtension(file.getName()))).findFirst().orElseGet(null));
     }

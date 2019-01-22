@@ -75,7 +75,7 @@ public class SftpFileService implements IFileService {
         try {
             String inputFolderPath = file.getPath();
             sftpChannel.put(inputFolderPath, outputFolderPath);
-            log.debug("Move file from {} to {} path", inputFolderPath, outputFolderPath);
+            log.info("Move file from {} to {} path", inputFolderPath, outputFolderPath);
             boolean resultOfDeleting = deleteLocalFiles(file);
             log.debug("Result of old files deleting is - ", resultOfDeleting);
             return true;
