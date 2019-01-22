@@ -21,7 +21,7 @@ public class JsonParser implements IReportParser<ErrorMessage> {
      * Method parse json input file
      *
      * @param file input file
-     * @return entity from parsed file
+     * @return entity from parsed file, or if can't parse file, return entity only with file name and false validity
      */
     @Override
     public ErrorMessage parseFile(File file) {
@@ -37,10 +37,14 @@ public class JsonParser implements IReportParser<ErrorMessage> {
             return errorMessage;
         } catch (IOException e) {
             log.error("Cant parse file {}, IOException \n {}, create not valid error message entity", filename, e.getMessage());
-            ErrorMessage notValidErrorMessage = new ErrorMessage();
-            notValidErrorMessage.setFileName(filename);
-            notValidErrorMessage.setValid(false);
-            return notValidErrorMessage;
+            return notValidErrorMessageBuilder(filename);
         }
+    }
+
+    private ErrorMessage notValidErrorMessageBuilder(String filename) {
+        ErrorMessage notValidErrorMessage = new ErrorMessage();
+        notValidErrorMessage.setFileName(filename);
+        notValidErrorMessage.setValid(false);
+        return notValidErrorMessage;
     }
 }

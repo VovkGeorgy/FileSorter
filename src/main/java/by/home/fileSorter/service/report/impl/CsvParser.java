@@ -25,7 +25,7 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
      * Method parse input csv file
      *
      * @param file file to parse
-     * @return entity from parsed file, or entity only with file name and false validity
+     * @return entity from parsed file, or if can't parse file, return entity only with file name and false validity
      */
     @Override
     public ExceptionMessage parseFile(File file) {
@@ -36,19 +36,23 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
                     .RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
             CSVRecord record = records.iterator().next();
             log.info("Csv file {} is parse successfully", filename);
-            return new ExceptionMessage(
-                    record.get("typeOfException"),
-                    record.get("messageType"),
-                    Long.parseLong(record.get("id")),
-                    record.get("message"),
-                    record.get("throwingTime"),
-                    filename,
-                    true
-            );
+            return validExceptionMessageBuilder(record, filename);
         } catch (IOException | NullPointerException | DateTimeParseException | IllegalArgumentException e) {
             log.error("Can't parse file {}, get exception \n {}, create not valid exception message entity", filename, e
                     .getMessage());
             return new ExceptionMessage(filename, false);
         }
+    }
+
+    private ExceptionMessage validExceptionMessageBuilder(CSVRecord record, String filename) {
+        return new ExceptionMessage(
+                record.get("typeOfException"),
+                record.get("messageType"),
+                Long.parseLong(record.get("id")),
+                record.get("message"),
+                record.get("throwingTime"),
+                filename,
+                true
+        );
     }
 }

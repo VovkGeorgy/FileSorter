@@ -1,7 +1,5 @@
 package by.home.fileSorter.service.report;
 
-import by.home.fileSorter.service.report.impl.CsvParser;
-import by.home.fileSorter.service.report.impl.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +26,8 @@ public class ReportParserFactory {
     private List<String> exceptionExtensions;
 
     private Map<List<String>, IReportParser> reportParsersMap = new HashMap<>();
-    private JsonParser jsonParser;
-    private CsvParser csvParser;
+    private IReportParser jsonParser;
+    private IReportParser csvParser;
 
     @PostConstruct
     public void init() {
@@ -38,7 +36,7 @@ public class ReportParserFactory {
     }
 
     @Autowired
-    public ReportParserFactory(JsonParser jsonParser, CsvParser csvParser) {
+    public ReportParserFactory(IReportParser jsonParser, IReportParser csvParser) {
         this.csvParser = csvParser;
         this.jsonParser = jsonParser;
     }

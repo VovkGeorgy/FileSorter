@@ -52,7 +52,7 @@ public class SorterRunnerService {
         if (files.isEmpty()) return;
         files.forEach(file -> {
             AbstractMessage message = reportParserFactory.getParser(file).parseFile(file);
-            boolean result = reportServiceFactory.getMessageService(message).process(message);
+            boolean result = reportServiceFactory.getService(message).process(message);
             log.debug("File {} is processed  - {}", file.getName(), result);
         });
     }
