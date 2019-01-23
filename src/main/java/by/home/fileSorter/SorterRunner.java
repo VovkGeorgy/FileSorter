@@ -1,6 +1,6 @@
 package by.home.fileSorter;
 
-import by.home.fileSorter.config.AppConfig;
+import by.home.fileSorter.config.DataConfig;
 import by.home.fileSorter.service.SorterRunnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -17,7 +17,7 @@ public class SorterRunner {
      */
     public static void main(String[] args) {
         log.info("Application start");
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DataConfig.class);
         context.getBean(SorterRunnerService.class).runSorter();
     }
 }

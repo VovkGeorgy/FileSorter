@@ -12,12 +12,20 @@ import javax.persistence.*;
 @MappedSuperclass
 public class AbstractMessage {
 
+    enum MessageType {
+        ERROR,
+        EXCEPTION,
+        CRITICAL_ERROR,
+        NOTICE
+    }
+
     @Id
     @Column(name = "id", nullable = false)
     protected Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "message_type")
-    protected String messageType;
+    protected MessageType messageType;
 
     @Column(name = "message")
     protected String message;
