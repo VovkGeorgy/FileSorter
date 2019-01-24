@@ -67,12 +67,13 @@ public class SftpFileService implements IFileService {
         if (session != null & sftpChannel != null) {
             sftpChannel.exit();
             session.disconnect();
-        } else log.error("Connection statements is NULL");
+        } else log.warn("Connection statements is NULL");
     }
 
     @Override
     public boolean moveFile(File file, String outputFolderPath) {
         try {
+            outputFolderPath += file.getName();
             String inputFolderPath = file.getPath();
             sftpChannel.put(inputFolderPath, outputFolderPath);
             log.info("Move file from {} to {} path", inputFolderPath, outputFolderPath);

@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 
@@ -32,8 +33,20 @@ public class SorterRunnerService {
     @Value("${max.read.files}")
     private int maxReadFiles;
 
-    @Value("${array.of.extensions}")
+    @Value("#{'${list.of.error.report.extensions}'.split(',')}")
+    private List<String> errorExtensions;
+
+    @Value("#{'${list.of.exception.report.extensions}'.split(',')}")
+    private List<String> exceptionExtensions;
+
     private String[] filesExtensions;
+
+    @PostConstruct
+    private void getFilesExtensions(){
+        errorExtensions.addAll(exceptionExtensions);
+        filesExtensions = (String[]) errorExtensions.toArray();
+    }
+
 
     @Autowired
     public SorterRunnerService(LocalFileService localFileService, ReportParserFactory reportParserFactory, ReportServiceFactory

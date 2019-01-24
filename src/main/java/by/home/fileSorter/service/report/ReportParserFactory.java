@@ -30,7 +30,7 @@ public class ReportParserFactory {
     private IReportParser csvParser;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         this.reportParsersMap.put(errorExtensions, jsonParser);
         this.reportParsersMap.put(exceptionExtensions, csvParser);
     }

@@ -30,10 +30,9 @@ public class CsvParser implements IReportParser<ExceptionMessage> {
     @Override
     public ExceptionMessage parseFile(File file) {
         String filename = file.getName();
-        log.info("Try to parse csv file {}", filename);
         try (Reader in = new FileReader(file)) {
-            Iterable<CSVRecord> records = CSVFormat
-                    .RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
+            Iterable<CSVRecord> records =
+                    CSVFormat.RFC4180.withHeader("messageType", "id", "message", "typeOfException", "throwingTime").parse(in);
             CSVRecord record = records.iterator().next();
             log.info("Csv file {} is parse successfully", filename);
             return buildValidExceptionMessage(record, filename);

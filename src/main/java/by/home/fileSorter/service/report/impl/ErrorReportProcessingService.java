@@ -47,14 +47,12 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
             log.info("Process valid error message entity from {} file", errorMessage.getFileName());
             errorRepository.save(errorMessage);
             return moveFiles(errorMessage, validOutFolderPath);
-        } else {
-            log.info("Process NOT valid error message entity from {} file", errorMessage.getFileName());
-            return moveFiles(errorMessage, notValidOutFolderPath);
         }
+        log.info("Process NOT valid error message entity from {} file", errorMessage.getFileName());
+        return moveFiles(errorMessage, notValidOutFolderPath);
     }
 
     private boolean moveFiles(ErrorMessage errorMessage, String targetFolderPath) {
-        String fileName = errorMessage.getFileName();
-        return sftpFileService.moveFile(new File(inputFolderPath + fileName), targetFolderPath + fileName);
+        return sftpFileService.moveFile(new File(inputFolderPath + errorMessage.getFileName()), targetFolderPath);
     }
 }

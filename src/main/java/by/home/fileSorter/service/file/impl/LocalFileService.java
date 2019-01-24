@@ -25,6 +25,7 @@ public class LocalFileService implements IFileService {
     @Override
     public boolean moveFile(File file, String outputPath) {
         String inputPath = file.getPath();
+        outputPath += file.getName();
         try {
             log.debug("Try to move file {}, to {}", inputPath, outputPath);
             Files.move(Paths.get(inputPath), Paths.get(outputPath), REPLACE_EXISTING);

@@ -54,7 +54,6 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
     }
 
     private boolean moveFiles(ExceptionMessage exceptionMessage, String targetFolderPath) {
-        String fileName = exceptionMessage.getFileName();
-        return localFileService.moveFile(new File(inputFolderPath + fileName), targetFolderPath + fileName);
+        return localFileService.moveFile(new File(inputFolderPath + exceptionMessage.getFileName()), targetFolderPath);
     }
 }
