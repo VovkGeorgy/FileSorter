@@ -42,11 +42,10 @@ public class SorterRunnerService {
     private String[] filesExtensions;
 
     @PostConstruct
-    private void getFilesExtensions(){
+    private void getFilesExtensions() {
         errorExtensions.addAll(exceptionExtensions);
-        filesExtensions = (String[]) errorExtensions.toArray();
+        filesExtensions = errorExtensions.toArray(new String[errorExtensions.size()]);
     }
-
 
     @Autowired
     public SorterRunnerService(LocalFileService localFileService, ReportParserFactory reportParserFactory, ReportServiceFactory

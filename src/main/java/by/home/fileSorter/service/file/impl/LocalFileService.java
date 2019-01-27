@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
 /**
  * Class realise files service methods
@@ -28,9 +28,8 @@ public class LocalFileService implements IFileService {
         outputPath += file.getName();
         try {
             log.debug("Try to move file {}, to {}", inputPath, outputPath);
-            Files.move(Paths.get(inputPath), Paths.get(outputPath), REPLACE_EXISTING);
+            Files.move(Paths.get(inputPath), Paths.get(outputPath), ATOMIC_MOVE);
         } catch (IOException e) {
-            e.printStackTrace();
             log.error("Get exception\n {} \nwith moving files from {}, to {}", e.getLocalizedMessage(), inputPath, outputPath);
             return false;
         }
@@ -47,9 +46,8 @@ public class LocalFileService implements IFileService {
         log.info("Scan files in folder {}", inputFolder);
         ArrayList<File> receivedFiles = new ArrayList<>();
         log.debug("Get {} files by {} extensions", receivedFiles.size(), filesExtensions.length);
-        for (int filesCount = 0; filesCount < maxReadFiles; filesCount++) {
-            if (it.hasNext()) receivedFiles.add(it.next());
-            else break;
+        for (int filesCount = 0; filesCount < maxReadFiles & it.hasNext(); filesCount++) {
+            receivedFiles.add(it.next());
         }
         return receivedFiles;
     }

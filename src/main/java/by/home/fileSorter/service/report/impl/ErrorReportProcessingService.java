@@ -4,6 +4,7 @@ import by.home.fileSorter.entity.ErrorMessage;
 import by.home.fileSorter.repository.ErrorRepository;
 import by.home.fileSorter.service.file.IFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.io.File;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ErrorReportProcessingService implements IReportProcessingService<ErrorMessage> {
 
     @Value("${input.folder.path}")
@@ -29,12 +31,6 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
 
     private final IFileService sftpFileService;
     private final ErrorRepository errorRepository;
-
-    @Autowired
-    public ErrorReportProcessingService(IFileService sftpFileService, ErrorRepository errorRepository) {
-        this.sftpFileService = sftpFileService;
-        this.errorRepository = errorRepository;
-    }
 
     /**
      * Method consist services for handing error entity

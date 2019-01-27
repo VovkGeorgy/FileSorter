@@ -1,5 +1,6 @@
 package by.home.fileSorter.service.report;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,18 @@ import java.util.Map;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReportParserFactory {
 
     @Value("#{'${list.of.error.report.extensions}'.split(',')}")
-    private List<String> errorExtensions;
+    private final List<String> errorExtensions;
 
     @Value("#{'${list.of.exception.report.extensions}'.split(',')}")
-    private List<String> exceptionExtensions;
+    private final List<String> exceptionExtensions;
 
     private Map<List<String>, IReportParser> reportParsersMap = new HashMap<>();
-    private IReportParser jsonParser;
-    private IReportParser csvParser;
+    private final IReportParser jsonParser;
+    private final IReportParser csvParser;
 
     @PostConstruct
     private void init() {
@@ -35,11 +37,6 @@ public class ReportParserFactory {
         this.reportParsersMap.put(exceptionExtensions, csvParser);
     }
 
-    @Autowired
-    public ReportParserFactory(IReportParser jsonParser, IReportParser csvParser) {
-        this.csvParser = csvParser;
-        this.jsonParser = jsonParser;
-    }
 
     /**
      * Method return entity of file parser depending of input file extension

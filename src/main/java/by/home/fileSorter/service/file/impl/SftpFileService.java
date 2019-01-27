@@ -78,7 +78,7 @@ public class SftpFileService implements IFileService {
             sftpChannel.put(inputFolderPath, outputFolderPath);
             log.info("Move file from {} to {} path", inputFolderPath, outputFolderPath);
             boolean resultOfDeleting = deleteLocalFiles(file);
-            log.debug("Result of old files deleting is - ", resultOfDeleting);
+            log.debug("Result of old files deleting is - {}", resultOfDeleting);
             return true;
         } catch (SftpException | NullPointerException e) {
             log.error("SFTP Connection exception {}", e.getMessage());

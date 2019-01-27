@@ -4,6 +4,7 @@ import by.home.fileSorter.entity.ExceptionMessage;
 import by.home.fileSorter.repository.ExceptionRepository;
 import by.home.fileSorter.service.file.IFileService;
 import by.home.fileSorter.service.report.IReportProcessingService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.io.File;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ExceptionReportProcessingService implements IReportProcessingService<ExceptionMessage> {
 
     @Value("${input.folder.path}")
@@ -29,12 +31,6 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
 
     private final IFileService localFileService;
     private final ExceptionRepository exceptionRepository;
-
-    @Autowired
-    public ExceptionReportProcessingService(IFileService localFileService, ExceptionRepository exceptionRepository) {
-        this.localFileService = localFileService;
-        this.exceptionRepository = exceptionRepository;
-    }
 
     /**
      * Method consist services for handing exception entity
