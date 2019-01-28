@@ -40,11 +40,11 @@ public class ErrorReportProcessingService implements IReportProcessingService<Er
      */
     public boolean process(ErrorMessage errorMessage) {
         if (errorMessage.isValid()) {
-            log.info("Process valid error message entity from {} file", errorMessage.getFileName());
+            log.debug("Process valid error message entity from {} file", errorMessage.getFileName());
             errorRepository.save(errorMessage);
             return moveFiles(errorMessage, validOutFolderPath);
         }
-        log.info("Process NOT valid error message entity from {} file", errorMessage.getFileName());
+        log.debug("Process NOT valid error message entity from {} file", errorMessage.getFileName());
         return moveFiles(errorMessage, notValidOutFolderPath);
     }
 

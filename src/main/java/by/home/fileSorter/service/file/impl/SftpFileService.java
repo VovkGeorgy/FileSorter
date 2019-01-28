@@ -67,7 +67,9 @@ public class SftpFileService implements IFileService {
         if (session != null & sftpChannel != null) {
             sftpChannel.exit();
             session.disconnect();
-        } else log.warn("Connection statements is NULL");
+            return;
+        }
+        log.warn("Connection statements is NULL");
     }
 
     @Override
@@ -78,7 +80,7 @@ public class SftpFileService implements IFileService {
             sftpChannel.put(inputFolderPath, outputFolderPath);
             log.info("Move file from {} to {} path", inputFolderPath, outputFolderPath);
             boolean resultOfDeleting = deleteLocalFiles(file);
-            log.debug("Result of old files deleting is - {}", resultOfDeleting);
+            log.debug("Result of old files is {} deleted is", resultOfDeleting ? " " : "NOT");
             return true;
         } catch (SftpException | NullPointerException e) {
             log.error("SFTP Connection exception {}", e.getMessage());

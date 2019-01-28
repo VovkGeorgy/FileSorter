@@ -29,7 +29,7 @@ public class ReportServiceFactory {
      * @return message processing service for input message
      */
     public IReportProcessingService getService(AbstractMessage message) {
-        log.info("Ge processing service for file {} message", message.getFileName());
+        log.debug("Get processing service for file {} message", message.getFileName());
         return (message instanceof ExceptionMessage) ? exceptionProcessingService : errorProcessingService;
     }
 }

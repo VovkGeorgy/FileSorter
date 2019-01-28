@@ -41,12 +41,11 @@ public class ExceptionReportProcessingService implements IReportProcessingServic
     public boolean process(ExceptionMessage exceptionMessage) {
         if (exceptionMessage.isValid()) {
             exceptionRepository.save(exceptionMessage);
-            log.info("Process valid exception message entity from {} file", exceptionMessage.getFileName());
+            log.debug("Process valid exception message entity from {} file", exceptionMessage.getFileName());
             return moveFiles(exceptionMessage, validOutputFolderPath);
-        } else {
-            log.info("Process NOT valid exception message entity from {} file", exceptionMessage.getFileName());
-            return moveFiles(exceptionMessage, notValidOutputFolderPath);
         }
+        log.debug("Process NOT valid exception message entity from {} file", exceptionMessage.getFileName());
+        return moveFiles(exceptionMessage, notValidOutputFolderPath);
     }
 
     private boolean moveFiles(ExceptionMessage exceptionMessage, String targetFolderPath) {
